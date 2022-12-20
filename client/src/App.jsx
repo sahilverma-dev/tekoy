@@ -1,7 +1,7 @@
 import React from "react";
 
 const App = () => {
-  return <div>{JSON.stringify(import.meta.env.VITE_REACT_APP_API)}</div>;
+  return <div>App</div>;
 };
 
 export default App;
