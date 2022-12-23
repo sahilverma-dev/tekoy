@@ -2,24 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!-- <link rel="icon" type="image/svg+xml" href="/logo.png" /> -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#333" />
-    <link rel="manifest" href="./manifest.json" />
     <title>Tekoy</title>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-    <script>
-      // service worker
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-          navigator.serviceWorker
-            .register("./serviceworker.js")
-            .then((res) => console.log("serviceWorker is working"))
-            .catch((err) => console.log(err));
-        });
-      }
-    </script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
