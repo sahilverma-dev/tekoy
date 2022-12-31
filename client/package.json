@@ -23,6 +23,7 @@
     "@mantine/modals": "^5.9.3",
     "@mantine/notifications": "^5.9.3",
     "@mantine/nprogress": "^5.9.3",
+    "@react-oauth/google": "^0.5.1",
     "axios": "^1.2.1",
     "embla-carousel-react": "^7.0.5",
     "eslint-config-prettier": "^8.5.0",
