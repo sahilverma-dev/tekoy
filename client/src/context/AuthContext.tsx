@@ -76,12 +76,13 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem("userData");
   };
 
-  // useEffect(() => {
-  //   const userData = localStorage.getItem("userData");
-  //   if (userData) setUser(JSON.parse(userData));
-  // }, []);
+  useEffect(() => {
+    const userData = localStorage.getItem("userData");
+    if (userData) setUser(JSON.parse(userData));
+  }, []);
   return (
     <AuthContext.Provider
       value={{

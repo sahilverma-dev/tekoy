@@ -6,9 +6,10 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Room from "./pages/Room";
 import Profile from "./pages/Profile";
+import { useAuth } from "./context/AuthContext";
 
 const App = () => {
-  const user = null; // TODO: get the logged in user form the context
+  const { user } = useAuth();
   return (
     <Routes>
       <Route path="/" element={<Home />} />
