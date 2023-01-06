@@ -153,4 +153,80 @@ const randomUser = async (req: Request, res: Response) => {
   }
 };
 
-export { loginUser, registerUser, randomUser };
+const loginWithGoogle = async (req: Request, res: Response) => {
+  try {
+    const { email, id, name, avatar } = req.body;
+
+    // Finding user with email
+    const user = await User.findOne({ email });
+
+    if (user) {
+      // Generate JWT for the user
+      const payload = {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        authProvider: user.authProvider,
+        avatar: user.avatar,
+        verified: user.verified,
+      };
+
+      const token = jwt.sign(payload, process.env.JWT_SECRET || "", {
+        expiresIn: "1d",
+      });
+
+      // Send response with user data and JWT
+      res.status(200).json({
+        user: payload,
+        token,
+        message: "User logged in",
+      });
+    } else {
+      // Create new user
+      const newUser = await User.create({
+        name,
+        email,
+        authProvider: "Google",
+        avatar,
+        verified: false,
+        password: id,
+      });
+      if (newUser) {
+        // Generate JWT for the new user
+        const payload = {
+          id: newUser._id,
+          name: newUser.name,
+          email: newUser.email,
+          authProvider: newUser.authProvider,
+          avatar: newUser.avatar,
+          verified: newUser.verified,
+        };
+        const token = jwt.sign(payload, process.env.JWT_SECRET || "", {
+          expiresIn: "1d",
+        });
+
+        // Send response with user data and JWT
+        res.status(200).json({
+          user: payload,
+          token,
+          message: "New user created",
+        });
+      } else {
+        // Send response error
+        res.status(200).json({
+          user: null,
+          token: null,
+          message: "Failed to generate new user",
+        });
+      }
+    }
+  } catch (error: any) {
+    console.log(error.message.red);
+
+    res.send({
+      error: error.message,
+    });
+  }
+};
+
+export { loginUser, registerUser, randomUser, loginWithGoogle };
