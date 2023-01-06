@@ -9,35 +9,41 @@ export interface User {
   password: string;
 }
 
-const userSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
+const userSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    authProvider: {
+      type: String,
+      required: true,
+      enum: ["Google", "Email/Password", "Random"],
+    },
+    verified: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
+    avatar: {
+      type: String,
+      default:
+        "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
+    },
+    password: {
+      type: String,
+      required: true,
+    },
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  authProvider: {
-    type: String,
-    required: true,
-    enum: ["Google", "Email/Password", "Random"],
-  },
-  verified: {
-    type: Boolean,
-    required: true,
-    default: false,
-  },
-  avatar: {
-    type: String,
-    default:
-      "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-});
+  {
+    timestamps: true,
+    collection: "users",
+  }
+);
 
 export const User = model<User & Document>("User", userSchema);

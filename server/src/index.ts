@@ -26,5 +26,5 @@ app.use("/api/v1/user", userRoute);
 console.clear();
 
 app.listen(PORT, () => {
-  console.log(`Listing on the port ${PORT}`);
+  console.log(`Listening on the port ${PORT}`);
 });
