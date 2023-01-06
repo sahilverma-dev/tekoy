@@ -1,6 +1,6 @@
 import { Document, model, Schema } from "mongoose";
 
-export interface User {
+interface User {
   name: string;
   email: string;
   authProvider: "Google" | "Email/Password" | "Random";

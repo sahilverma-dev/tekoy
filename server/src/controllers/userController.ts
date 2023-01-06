@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 import { User } from "../models/UserModel";
+import axios from "axios";
 
 const loginUser = async (req: Request, res: Response) => {
   // Find user with matching email
@@ -102,4 +103,54 @@ const registerUser = async (req: Request, res: Response) => {
   }
 };
 
-export { loginUser, registerUser };
+const randomUser = async (req: Request, res: Response) => {
+  try {
+    // Get user data from the randomuser.me API
+    const { data } = await axios("https://randomuser.me/api?results=1");
+
+    // Create new user
+    const newUser = await User.create({
+      name: `${data?.results[0]?.name?.first} ${data?.results[0]?.name?.last}`,
+      email: data?.results[0]?.email,
+      authProvider: "Random",
+      avatar: data?.results[0]?.picture?.large,
+      verified: false,
+      password: data?.results[0]?.login?.password,
+    });
+    if (newUser) {
+      // Generate JWT for the new user
+      const payload = {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        authProvider: newUser.authProvider,
+        avatar: newUser.avatar,
+        verified: newUser.verified,
+      };
+      const token = jwt.sign(payload, process.env.JWT_SECRET || "", {
+        expiresIn: "1d",
+      });
+
+      // Send response with user data and JWT
+      res.status(200).json({
+        user: payload,
+        token,
+        message: "New user generated",
+      });
+    } else {
+      // Send response error
+      res.status(200).json({
+        user: null,
+        token: null,
+        message: "Failed to generate new user",
+      });
+    }
+  } catch (error: any) {
+    console.log(error);
+    res.status(500).send({
+      error: error.message,
+    });
+  }
+};
+
+export { loginUser, registerUser, randomUser };
