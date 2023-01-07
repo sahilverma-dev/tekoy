@@ -3,8 +3,12 @@ import { Box, Button, Input, Title, PasswordInput, Stack } from "@mantine/core";
 import { FcGoogle as GoogleIcon } from "react-icons/fc";
 import { Link } from "react-router-dom";
 import { useForm } from "@mantine/form";
+import { useAuth } from "../context/authContext";
+import { User } from "../context/types";
 
 const Register = () => {
+  const authContext = useAuth();
+
   const form = useForm({
     initialValues: {
       email: "",
@@ -13,13 +17,17 @@ const Register = () => {
     },
   });
 
-  const loginWithEmailAndPassword = (e: any) => {
+  const register = (e: any) => {
     e.preventDefault();
+    const newUser: User = {
+      email: form.values.email,
+    };
+    authContext.registerWithEmailPassword(newUser);
     console.log(form.values);
   };
 
   const loginWithGoogle = () => {
-    console.log("login with google");
+    authContext.loginWithGoogle();
   };
   return (
     <Box
@@ -29,10 +37,7 @@ const Register = () => {
       <Title order={1} className="text-white text-5xl">
         Register
       </Title>
-      <form
-        className="w-full p-3 max-w-lg"
-        onSubmit={loginWithEmailAndPassword}
-      >
+      <form className="w-full p-3 max-w-lg" onSubmit={register}>
         <Stack>
           <Input
             type="email"

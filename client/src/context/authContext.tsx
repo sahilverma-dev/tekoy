@@ -38,7 +38,7 @@ const AuthContextProvider: React.FC<AuthProvidorProps> = (
     name: string,
     avatar: string
   ) => {
-    //login with randomly generated data
+    setUser({ id, email, name, avatar });
   };
 
   const logout = () => {
