@@ -6,7 +6,7 @@ import { useForm } from "@mantine/form";
 import { useAuth } from "../context/authContext";
 
 const Login = () => {
-  const authContext = useAuth();
+  const { loginWithEmailPassword, loginWithGoogle } = useAuth();
 
   const form = useForm({
     initialValues: {
@@ -17,13 +17,10 @@ const Login = () => {
 
   const loginWithEmailAndPassword = (e: any) => {
     e.preventDefault();
-    authContext.loginWithEmailPassword(form.values.email, form.values.password);
+    loginWithEmailPassword(form.values.email, form.values.password);
     console.log(form.values);
   };
 
-  const loginWithGoogle = () => {
-    authContext.loginWithGoogle();
-  };
   return (
     <Box
       bg="dark"
