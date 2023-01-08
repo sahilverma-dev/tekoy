@@ -1,45 +1,49 @@
-import { Schema, model, Document } from "mongoose";
+import { Document, model, Schema } from "mongoose";
 
-export interface IUser extends Document {
+interface User {
   name: string;
   email: string;
   authProvider: "Google" | "Email/Password" | "Random";
-  verified?: boolean;
-  avatar: string;
+  verified: boolean;
+  avatar?: string;
+  password: string;
 }
 
-const userSchema = new Schema<IUser>(
+const userSchema = new Schema(
   {
     name: {
       type: String,
-      required: [true, "Name is required"],
-      trim: true,
-      minlength: [3, "Name must be at least 3 characters"],
-      maxlength: [20, "Name must be less than 20 characters"],
+      required: true,
     },
     email: {
       type: String,
-      trim: true,
-      required: [true, "Email is required"],
-      // unique: [true, 'Email already exists'],
+      required: true,
+      unique: true,
     },
     authProvider: {
       type: String,
-      required: [true, "Auth provider is required"],
+      required: true,
       enum: ["Google", "Email/Password", "Random"],
     },
     verified: {
       type: Boolean,
+      required: true,
+      default: false,
     },
     avatar: {
       type: String,
-      trim: true,
-      required: [true, "Email is required"],
+      default:
+        "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
+    },
+    password: {
+      type: String,
+      required: true,
     },
   },
   {
     timestamps: true,
+    collection: "users",
   }
 );
 
-export const User = model<IUser>("Users", userSchema);
+export const User = model<User & Document>("User", userSchema);

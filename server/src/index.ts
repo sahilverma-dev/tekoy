@@ -3,9 +3,10 @@ import dotenv from "dotenv";
 import cors from "cors";
 import "colors";
 
+import { connectDB } from "./config/db";
+
 // importing routes
 import { userRoute } from "./routes/user";
-import { connectDB } from "./config/db";
 
 // configure dotenv
 dotenv.config();
@@ -23,7 +24,7 @@ app.get("/", (req, res) => {
 console.clear();
 
 app.listen(PORT, () => {
-  console.log(`Listing on the port ${PORT}`);
+  console.log(`Listening on the port ${PORT}`);
 });
 
 // connecting to database
