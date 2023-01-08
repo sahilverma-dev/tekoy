@@ -46,12 +46,11 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         const userData: IUser = {
           id: data?.sub,
           avatar: data?.picture,
-          authProvider: "Google",
           email: data?.email,
           name: data?.name,
         };
         const { data: data1 } = await api({
-          url: "user/login",
+          url: "user/google",
           method: "post",
           data: userData,
         });

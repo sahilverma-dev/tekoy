@@ -10,7 +10,9 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <BrowserRouter>
-      <MantineProvider theme={{ colorScheme: "dark" }}>
+      <MantineProvider
+      // theme={{ colorScheme: "dark" }}
+      >
         <GoogleOAuthProvider
           clientId={import.meta.env.VITE_REACT_APP_GOOGLE_CLIENT_ID}
         >
