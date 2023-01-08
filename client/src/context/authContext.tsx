@@ -27,7 +27,7 @@ const AuthContextProvider: React.FC<AuthProvidorProps> = (
     useGoogleLogin({
       onSuccess: async (res) => {
         const { data } = await axios(
-          "https://www.googleapis.com/oauth2/v3/userinfo",
+          "https://www.googleapis.com/oauth2/v3/userinfo", // TODO: move it in env or config folder
           {
             headers: {
               Authorization: `Bearer ${res?.access_token}`,
@@ -36,7 +36,7 @@ const AuthContextProvider: React.FC<AuthProvidorProps> = (
         );
         console.log(data);
         const newUser = { email: data.email, id: data.sub, avatar: data.picture, name: `${data.given_name} ${data.family_name}` };
-        const token = await axios.post(import.meta.env.VITE_REACT_APP_API, { ...newUser });
+        const token = await axios.post(`${import.meta.env.VITE_REACT_APP_API}api/v1/user/google`, { ...newUser });
 
         const cookies = new Cookies();
         cookies.set('user', token);
