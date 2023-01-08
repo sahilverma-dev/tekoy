@@ -16,9 +16,9 @@ const Header = () => {
           <img
             src="/logo-white.png"
             alt="Tekoy"
-            className="h-9 aspect-square"
+            className="md:h-9 h-7 aspect-square"
           />
-          <span className="text-xl font-extrabold">Tekoy</span>
+          <span className="md:text-xl text-lg font-extrabold">Tekoy</span>
         </Link>
         <div className="flex">
           {user ? (
@@ -50,7 +50,7 @@ const Header = () => {
             </Menu>
           ) : (
             <Link
-              className="bg-white shadow text-black px-8 py-2 font-bold rounded-md hover:scale-105 transition-all"
+              className="bg-white shadow text-xs md:text-xl text-black px-5 md:px-8 py-2 font-bold rounded md:rounded-md hover:scale-105 transition-all"
               to="/login"
             >
               Login
