@@ -1,14 +1,17 @@
 /* eslint-disable @typescript-eslint/no-empty-function */ // TODO: remove this
 import { createContext, useContext, useState } from "react";
 import { AuthContextProps, User } from "./types";
+import { useGoogleLogin } from '@react-oauth/google';
+import axios from 'axios';
+import Cookies from 'universal-cookie';
 
 const AuthContext = createContext<AuthContextProps>({
   user: {},
-  loginWithGoogle: () => {},
-  loginWithEmailPassword: () => {},
-  registerWithEmailPassword: () => {},
-  loginAsRandomUser: () => {},
-  logout: () => {},
+  loginWithGoogle: () => { },
+  loginWithEmailPassword: () => { },
+  registerWithEmailPassword: () => { },
+  loginAsRandomUser: () => { },
+  logout: () => { },
 });
 
 type AuthProvidorProps = {
@@ -20,16 +23,33 @@ const AuthContextProvider: React.FC<AuthProvidorProps> = (
 ) => {
   const [user, setUser] = useState<User>();
 
-  const loginWithGoogle = () => {
-    //login user with google
-  };
+  const loginWithGoogle =
+    useGoogleLogin({
+      onSuccess: async (res) => {
+        const { data } = await axios(
+          "https://www.googleapis.com/oauth2/v3/userinfo",
+          {
+            headers: {
+              Authorization: `Bearer ${res?.access_token}`,
+            },
+          }
+        );
+        console.log(data);
+        const newUser = { email: data.email, id: data.sub, avatar: data.picture, name: `${data.given_name} ${data.family_name}` };
+        const token = await axios.post(import.meta.env.VITE_REACT_APP_API, { ...newUser });
+
+        const cookies = new Cookies();
+        cookies.set('user', token);
+      },
+    });
+
 
   const loginWithEmailPassword = (email: string, password: string) => {
-    //login user with email and password
+    // login user with email and password
   };
 
   const registerWithEmailPassword = (user: User) => {
-    //register user with email and password
+    // register user with email and password
   };
 
   const loginAsRandomUser = (
