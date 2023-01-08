@@ -27,12 +27,21 @@ const loginUser = async (req: Request, res: Response) => {
   if (!process.env.JWT_SECRET) {
     process.env.JWT_SECRET = "my-secret";
   }
+  const payload = {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    authProvider: user.authProvider,
+    avatar: user.avatar,
+    verified: user.verified,
+  };
 
   // Generate JWT and send it as a response
-  const token = jwt.sign(user, process.env.JWT_SECRET);
+  const token = jwt.sign(payload, process.env.JWT_SECRET || "", {expiresIn: "1d"});
   res.send({
     message: "Login successful",
     token,
+    user: payload
   });
 };
 
