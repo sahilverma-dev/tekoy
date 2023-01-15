@@ -83,10 +83,24 @@ const Home = () => {
             <RoomCard />
             <RoomCard />
           </motion.div>
-          {/* <div className="flex items-center flex-col gap-2 justify-center h-screen w-full">
-          <Loader color="indigo" />
-          <Text className="text-xs text-slate-800">Loading Rooms...</Text>
-        </div> */}
+          {/* <div
+            className="flex items-center flex-col gap-2 justify-center w-full"
+            style={{
+              height: "calc(100vh - 160px)",
+            }}
+          >
+            <Loader color="indigo" />
+            <Text>
+              There's no room. Be the first to{" "}
+              <span
+                onClick={openModal}
+                className="text-blue-600 cursor-pointer font-bold"
+              >
+                create one
+              </span>
+            </Text>
+            <Text className="text-xs text-slate-800">Loading Rooms...</Text>
+          </div> */}
         </motion.div>
       </motion.div>
       <Modal
