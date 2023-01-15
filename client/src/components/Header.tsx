@@ -50,7 +50,7 @@ const Header = () => {
             </Menu>
           ) : (
             <Link
-              className="bg-white shadow text-xs md:text-xl text-black px-5 md:px-8 py-2 font-bold rounded md:rounded-md hover:scale-105 transition-all"
+              className="bg-white shadow text-xs md:text-base text-black px-5 md:px-8 py-2 font-bold rounded md:rounded-md hover:scale-105 transition-all"
               to="/login"
             >
               Login
