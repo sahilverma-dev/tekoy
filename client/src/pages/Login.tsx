@@ -4,8 +4,9 @@ import { FcGoogle as GoogleIcon } from "react-icons/fc";
 import { Link } from "react-router-dom";
 import { useForm } from "@mantine/form";
 import { useAuth } from "../context/authContext";
+import React from "react";
 
-const Login = () => {
+const Login: React.FunctionComponent = () => {
   const { loginWithEmailPassword, loginWithGoogle } = useAuth();
 
   const form = useForm({
@@ -14,6 +15,10 @@ const Login = () => {
       password: "",
     },
   });
+
+  const googleLoginHandler = (e: any) => {
+    loginWithGoogle();
+  }
 
   const loginWithEmailAndPassword = (e: any) => {
     e.preventDefault();
@@ -54,7 +59,7 @@ const Login = () => {
       <Button
         leftIcon={<GoogleIcon />}
         variant="outline"
-        onClick={loginWithGoogle}
+        onClick={googleLoginHandler}
       >
         Login with Google
       </Button>

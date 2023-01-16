@@ -1,4 +1,5 @@
 import express, { json } from "express";
+import cors from "cors";
 import dotenv from "dotenv";
 import "colors";
 // importing routes
@@ -11,6 +12,11 @@ dotenv.config();
 const app = express();
 
 const PORT = process.env.PORT || 4000;
+app.use(
+  cors({
+    origin: process.env.ORIGIN || "*",
+  })
+);
 
 app.use(json());
 
