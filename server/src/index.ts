@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import "colors";
 // importing routes
 import { userRoute } from "./routes/userRoute";
+import { roomRoute } from "./routes/roomRoute";
 import { connectDB } from "./config/db";
 
 // configuration
@@ -28,7 +29,7 @@ app.get("/", (req, res) => {
   res.send("listening");
 });
 app.use("/api/v1/user", userRoute);
-
+app.use("/api/v1/room", roomRoute);
 console.clear();
 
 app.listen(PORT, () => {
