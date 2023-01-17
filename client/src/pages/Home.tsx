@@ -64,7 +64,7 @@ const Home = () => {
             initial="hidden"
             animate="visible"
             // animate={control}
-            className="grid md:grid-cols-4 sm:grid-cols-2 gap-2 my-4"
+            className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 gap-2 my-4"
           >
             <RoomCard />
             <RoomCard />
@@ -111,10 +111,10 @@ const Home = () => {
         // overlayColor={theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2]}
         overlayOpacity={0.8}
         overlayBlur={3}
-        size="md"
+        size="80%"
         overflow="inside"
         onClose={closeModal}
-        // title="Introduce yourself!"
+        title="Create new Room"
         transition="fade"
         transitionDuration={600}
         transitionTimingFunction="ease"
