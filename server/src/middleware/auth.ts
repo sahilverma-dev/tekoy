@@ -1,19 +1,23 @@
-import {isTokenValid} from '../utils'
-import {Request, Response, NextFunction} from 'express'
+import { isTokenValid } from "../utils";
+import { Request, Response, NextFunction } from "express";
 
-export const authenticateuser = (req: Request, res: Response, next: NextFunction) => {
+export const authenticateUser = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1]
+    const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
-      return res.status(401).json({message: 'Unauthorized'})
+      return res.status(401).json({ message: "Unauthorized" });
     }
-    const decodedToken = isTokenValid(token)
+    const decodedToken = isTokenValid(token);
     if (!decodedToken) {
-      return res.status(401).json({message: 'Unauthorized'})
+      return res.status(401).json({ message: "Unauthorized" });
     }
-    req.body.user = decodedToken
-    next()
+    req.body.user = decodedToken;
+    next();
   } catch (error) {
-    return res.status(401).json({message: 'Unauthorized'})
+    return res.status(401).json({ message: "Unauthorized" });
   }
-}
+};

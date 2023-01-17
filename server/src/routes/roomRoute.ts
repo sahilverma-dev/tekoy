@@ -1,20 +1,20 @@
-import { Router } from "express"
-import { authenticateuser } from "../middleware/auth"
+import { Router } from "express";
+import { authenticateUser } from "../middleware/auth";
 import {
   createRoom,
   deleteRoom,
   getRoom,
   getRooms,
-  updateRoom
-} from "../controllers/roomController"
+  updateRoom,
+} from "../controllers/roomController";
 
-const roomRoute = Router()
+const roomRoute = Router();
 
 roomRoute
-  .post("/create-room", authenticateuser, createRoom)
-  .get("/get-room/:roomId", authenticateuser, getRoom)
+  .post("/create-room", authenticateUser, createRoom)
+  .get("/get-room/:roomId", authenticateUser, getRoom)
   .get("/get-rooms", getRooms)
-  .post("/update-room", authenticateuser, updateRoom)
-  .post("/delete-room", authenticateuser, deleteRoom)
+  .post("/update-room", authenticateUser, updateRoom)
+  .post("/delete-room", authenticateUser, deleteRoom);
 
 export { roomRoute };
