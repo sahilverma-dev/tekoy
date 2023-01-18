@@ -5,14 +5,59 @@ import {
   Checkbox,
   Button,
 } from "@mantine/core";
+import { useForm } from "@mantine/form/";
+import { showNotification } from "@mantine/notifications";
 
 // icons
 import { FcGoogle as GoogleIcon } from "react-icons/fc";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { FormEvent } from "react";
 
 const Register = () => {
-  const { loginWithGoogle, loginAsRandomUser } = useAuth();
+  const form = useForm({
+    initialValues: {
+      email: "",
+      name: "",
+      password1: "",
+      password2: "",
+      terms: false,
+    },
+
+    validate: {
+      email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
+    },
+  });
+
+  const {
+    loginWithGoogle,
+    isLoading,
+    loginAsRandomUser,
+    registerWithEmailPassword,
+  } = useAuth();
+
+  const formSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const { email, name, password1, password2 } = form.values;
+    if (name && name && email && password1 && password2)
+      if (password1 !== password2) {
+        showNotification({
+          title: "Passwords are not same",
+          color: "red",
+          message: "Confirm your password properly",
+        });
+      } else {
+        registerWithEmailPassword(email, name, password1);
+      }
+    else {
+      showNotification({
+        title: "All felids are required",
+        color: "red",
+        message: "Enter all input felids",
+      });
+    }
+  };
+
   return (
     <div className="flex">
       <div className="bg-white sm:h-screen h-[700px] w-full py-5 px-7">
@@ -26,25 +71,46 @@ const Register = () => {
           </Link>
           <div>
             <Title className="text-3xl font-poppins font-bold">Register </Title>
-            <form className="my-4 flex flex-col gap-3">
+            <form className="my-4 flex flex-col gap-3" onSubmit={formSubmit}>
               <TextInput
                 size="md"
+                required
+                placeholder="Enter your Name"
+                label="Name"
+                autoFocus
+                type="text"
+                disabled={isLoading}
+                {...form.getInputProps("name")}
+              />
+              <TextInput
+                size="md"
+                required
                 placeholder="Enter your email"
                 label="Email"
-                autoFocus
                 type="email"
+                disabled={isLoading}
+                {...form.getInputProps("email")}
               />
+
               <PasswordInput
                 size="md"
+                required
                 placeholder="Enter your password"
                 label="Password"
+                disabled={isLoading}
+                {...form.getInputProps("password1")}
               />
               <PasswordInput
                 size="md"
+                required
                 placeholder="Confirm your password"
                 label="Confirm Password"
+                disabled={isLoading}
+                {...form.getInputProps("password2")}
               />
               <Checkbox
+                disabled={isLoading}
+                {...form.getInputProps("terms")}
                 label={
                   <>
                     Accepts{" "}
@@ -61,6 +127,12 @@ const Register = () => {
               <Button
                 type="submit"
                 size="md"
+                loading={isLoading}
+                disabled={
+                  !form.values.terms ||
+                  form.values.password1.length < 6 ||
+                  form.values.password2.length < 6
+                }
                 className="bg-primary hover:bg-black active:bg-slate-900 w-full rounded-full font-bold transition-all"
               >
                 Register
@@ -70,6 +142,8 @@ const Register = () => {
                 type="button"
                 size="md"
                 onClick={loginAsRandomUser}
+                loading={isLoading}
+                disabled={!form.values.terms}
                 className="bg-blue-600 hover:bg-black active:bg-slate-900 w-full rounded-full font-bold transition-all"
               >
                 Continue as a Random User
@@ -79,6 +153,8 @@ const Register = () => {
                 type="button"
                 size="md"
                 onClick={loginWithGoogle}
+                loading={isLoading}
+                disabled={!form.values.terms}
                 className="border border-black/30 hover:bg-black hover:text-white text-black active:bg-zinc-700 active:text-white w-full rounded-full font-bold transition-all"
               >
                 <GoogleIcon />

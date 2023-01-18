@@ -9,6 +9,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { AnimatePresence } from "framer-motion";
+import { NotificationsProvider } from "@mantine/notifications";
 
 const queryClient = new QueryClient();
 
@@ -19,16 +20,18 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
         <MantineProvider
         // theme={{ colorScheme: "dark" }}
         >
-          <GoogleOAuthProvider
-            clientId={import.meta.env.VITE_REACT_APP_GOOGLE_CLIENT_ID}
-          >
-            <AuthProvider>
-              <AnimatePresence>
-                <App />
-              </AnimatePresence>
-              {/* <ReactQueryDevtools /> */}
-            </AuthProvider>
-          </GoogleOAuthProvider>
+          <NotificationsProvider>
+            <GoogleOAuthProvider
+              clientId={import.meta.env.VITE_REACT_APP_GOOGLE_CLIENT_ID}
+            >
+              <AuthProvider>
+                <AnimatePresence>
+                  <App />
+                </AnimatePresence>
+                <ReactQueryDevtools />
+              </AuthProvider>
+            </GoogleOAuthProvider>
+          </NotificationsProvider>
         </MantineProvider>
       </BrowserRouter>
     </QueryClientProvider>
