@@ -1,25 +1,29 @@
 import { useState } from "react";
-import { Title, Button, Loader, Text, Modal } from "@mantine/core";
-import Header from "../components/Header";
+import { Title, Button, Modal } from "@mantine/core";
+import Header from "../components/common/Header";
 
-import { motion, useAnimation } from "framer-motion";
+import {
+  motion,
+  // useAnimation
+} from "framer-motion";
 
 // icons
 import { BiSearch as SearchIcon } from "react-icons/bi";
 import { HiPlus as AddIcon } from "react-icons/hi";
 import RoomCard from "../components/RoomCard";
-import { container } from "../constants/varients";
+import { container } from "../constants/variants";
 import { useMediaQuery } from "@mantine/hooks";
+import Page from "../components/common/Page";
 
 const Home = () => {
-  const control = useAnimation();
+  // const controls = useAnimation();
 
   const isMobile = useMediaQuery("(max-width: 600px)");
   const [opened, setOpened] = useState<boolean>(false);
   const openModal = () => setOpened(true);
   const closeModal = () => setOpened(false);
   return (
-    <>
+    <Page>
       <motion.div layout>
         <Header />
         <motion.div
@@ -121,7 +125,7 @@ const Home = () => {
       >
         {/* Modal content */}
       </Modal>
-    </>
+    </Page>
   );
 };
 

@@ -4,8 +4,9 @@ import { Title, TextInput, PasswordInput, Button } from "@mantine/core";
 // icons
 import { FcGoogle as GoogleIcon } from "react-icons/fc";
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/authContext";
 import { useForm } from "@mantine/form";
+import Page from "../components/common/Page";
 
 const Login = () => {
   const form = useForm({
@@ -32,7 +33,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex">
+    <Page className="flex">
       <div className="bg-white sm:h-screen h-[650px] w-full py-5 px-7">
         <div className="max-w-xl flex flex-col justify-between h-full mx-auto">
           <Link to="/">
@@ -119,7 +120,7 @@ const Login = () => {
           className=" w-full max-w-[400px] aspect-square rounded-lg object-contain origin-center shadow-lg"
         />
       </div>
-    </div>
+    </Page>
   );
 };
 

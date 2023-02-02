@@ -1,11 +1,11 @@
 import { Avatar, Menu } from "@mantine/core";
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 
 // icons
 
 import { FaUserCircle as ProfileIcon } from "react-icons/fa";
 import { FiPower as LogoutIcon } from "react-icons/fi";
+import { useAuth } from "../../context/authContext";
 
 const Header = () => {
   const { user, logout } = useAuth();

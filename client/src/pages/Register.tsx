@@ -11,8 +11,9 @@ import { showNotification } from "@mantine/notifications";
 // icons
 import { FcGoogle as GoogleIcon } from "react-icons/fc";
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/authContext";
 import { FormEvent } from "react";
+import Page from "../components/common/Page";
 
 const Register = () => {
   const form = useForm({
@@ -59,7 +60,7 @@ const Register = () => {
   };
 
   return (
-    <div className="flex">
+    <Page className="flex">
       <div className="bg-white sm:h-screen h-[700px] w-full py-5 px-7">
         <div className="max-w-xl flex flex-col justify-between h-full mx-auto">
           <Link to="/">
@@ -190,7 +191,7 @@ const Register = () => {
           className=" w-full max-w-[400px] aspect-square rounded-lg object-contain origin-center shadow-lg"
         />
       </div>
-    </div>
+    </Page>
   );
 };
 
