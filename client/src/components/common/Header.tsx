@@ -10,7 +10,7 @@ import { useAuth } from "../../context/authContext";
 const Header = () => {
   const { user, logout } = useAuth();
   return (
-    <div className="sticky inset-0 z-20 w-full p-4 bg-primary text-white">
+    <div className="sticky inset-0 z-20 w-full p-4 bg-primary text-white z-30">
       <div className="max-w-8xl mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
           <img
