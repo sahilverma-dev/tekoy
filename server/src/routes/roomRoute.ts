@@ -11,10 +11,10 @@ import {
 const roomRoute = Router();
 
 roomRoute
-  .post("/create-room", authenticateUser, createRoom)
-  .get("/get-room/:roomId", authenticateUser, getRoom)
-  .get("/get-rooms", getRooms)
-  .post("/update-room", authenticateUser, updateRoom)
-  .post("/delete-room", authenticateUser, deleteRoom);
+  .post("/create", authenticateUser, createRoom)
+  .get("/:roomId", authenticateUser, getRoom)
+  .get("/all", getRooms)
+  .patch("/update", authenticateUser, updateRoom)
+  .delete("/delete/:roomId", authenticateUser, deleteRoom);
 
 export { roomRoute };
