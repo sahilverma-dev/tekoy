@@ -13,7 +13,7 @@ export const createRoom = async (req: Request, res: Response) => {
     res.send({
       message: "room created",
       room: newRoom,
-      // user: req.body.user,
+      user: req.body.user,
     });
   } catch (error: any) {
     res.status(400).json({
@@ -37,10 +37,9 @@ export const getRoom = async (req: Request, res: Response) => {
 };
 
 export const getRooms = async (req: Request, res: Response) => {
-  const rooms = await Room.find().populate(
-    "user",
-    "name id email authProvider avatar"
-  );
+  const rooms = await Room.find()
+    .populate("user", "name id email authProvider avatar")
+    .populate("listeners", "name id email authProvider avatar");
   if (rooms) {
     res.status(200).json({
       rooms,

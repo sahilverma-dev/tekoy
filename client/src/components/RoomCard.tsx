@@ -4,15 +4,21 @@ import { Link } from "react-router-dom";
 
 import { motion } from "framer-motion";
 import { item } from "../constants/variants";
+import { RoomType, User } from "../interfaces";
 
-const RoomCard = () => {
+// props type
+interface PropsType {
+  room: RoomType;
+}
+
+const RoomCard = ({ room }: PropsType) => {
   return (
     <motion.div variants={item} layout className="mb-3">
       <div className="relative rounded-lg">
-        <Link to={"/room/roomID"}>
+        <Link to={`/room/${room._id}`}>
           <div className="overlay rounded-lg overflow-hidden" />
           <Image
-            src="https://img.freepik.com/free-vector/night-ocean-landscape-full-moon-stars-shine_107791-7397.jpg?w=2000"
+            src={room.thumbnail}
             withPlaceholder
             alt="Without placeholder"
             imageProps={{
@@ -22,74 +28,48 @@ const RoomCard = () => {
             }}
           />
         </Link>
-        <Link to={"/user/userID"}>
-          <Tooltip label={"Sahil is Speaking"} withArrow>
+        <Link to={`/user/${room.user._id}`}>
+          <Tooltip label={`${room.user.name} is Speaking`} withArrow>
             <Avatar
               className="absolute bottom-0 right-2 translate-y-1/2 z-20 border border-black shadow-md hover:scale-125 transition-all"
-              src="https://lh3.googleusercontent.com/a/AEdFTp5pquuNymzEj7041BrINbzZXXLY9IRlCX4XGgMgZQ=s96-c"
+              src={room.user.avatar}
+              alt={room.user.name}
               radius="xl"
             />
           </Tooltip>
         </Link>
       </div>
       <div className="flex gap-1 items-center my-1">
-        <Avatar.Group>
-          <Link to={"/user/userID"}>
-            <Tooltip label="Sahil Verma" withArrow className="text-xs z-50">
-              <Avatar
-                src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cGVyc29ufGVufDB8fDB8fA%3D%3D&w=1000&q=80"
-                radius="xl"
-                size="sm"
-                className="hover:scale-125 transition-all"
-              />
-            </Tooltip>
-          </Link>
-          <Link to={"/user/userID"}>
-            <Tooltip label="Sahil Verma" withArrow className="text-xs">
-              <Avatar
-                src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cGVyc29ufGVufDB8fDB8fA%3D%3D&w=1000&q=80"
-                radius="xl"
-                size="sm"
-                className="hover:scale-125 transition-all"
-              />
-            </Tooltip>
-          </Link>
-          <Link to={"/user/userID"}>
-            <Tooltip label="Sahil Verma" withArrow className="text-xs">
-              <Avatar
-                src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cGVyc29ufGVufDB8fDB8fA%3D%3D&w=1000&q=80"
-                radius="xl"
-                size="sm"
-                className="hover:scale-125 transition-all"
-              />
-            </Tooltip>
-          </Link>
-          <Link to={"/user/userID"}>
-            <Tooltip label="Sahil Verma" withArrow className="text-xs">
-              <Avatar
-                src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cGVyc29ufGVufDB8fDB8fA%3D%3D&w=1000&q=80"
-                radius="xl"
-                size="sm"
-                className="hover:scale-125 transition-all"
-              />
-            </Tooltip>
-          </Link>
-          <Link to={"/user/userID"}>
-            <Tooltip label="Sahil Verma" withArrow className="text-xs">
-              <Avatar
-                src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cGVyc29ufGVufDB8fDB8fA%3D%3D&w=1000&q=80"
-                radius="xl"
-                size="sm"
-                className="hover:scale-125 transition-all"
-              />
-            </Tooltip>
-          </Link>
-        </Avatar.Group>
-        <Text className="text-xs text-slate-600 ">10 listeners</Text>
+        {room.listeners.length > 0 ? (
+          <>
+            <Avatar.Group>
+              {room.listeners.slice(0, 3).map((listener: User) => (
+                <Link key={listener._id} to={`/user/${listener._id}`}>
+                  <Tooltip label={listener.name} withArrow className="text-xs">
+                    <Avatar
+                      src={listener.avatar}
+                      alt={listener.name}
+                      radius="xl"
+                      size="sm"
+                      className="hover:scale-125 transition-all"
+                    />
+                  </Tooltip>
+                </Link>
+              ))}
+            </Avatar.Group>
+            <Text className="text-xs text-slate-600 ">
+              {room.listeners.length - 3 === 0
+                ? "listeners"
+                : `+${room.listeners.length - 3} listeners`}
+            </Text>
+          </>
+        ) : (
+          <Text className="text-xs text-slate-600 my-2">No Listeners</Text>
+        )}
       </div>
-      <Link to={"/room/roomID"}>
+      <Link to={`/room/${room._id}`}>
         <Title order={2} className="text-lg truncate">
-          How to start coding as beginner?
+          {room.title}
         </Title>
       </Link>
     </motion.div>

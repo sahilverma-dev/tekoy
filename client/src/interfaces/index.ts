@@ -8,7 +8,7 @@ export interface IUser {
 }
 
 export interface User {
-  id?: number;
+  _id?: number;
   email?: string;
   name?: string;
   avatar?: string;
@@ -26,4 +26,13 @@ export interface AuthContextProps {
     avatar: string
   ) => void;
   logout: () => void;
+}
+
+export interface RoomType {
+  _id: string;
+  title: string;
+  thumbnail: string;
+  user: User;
+  listeners: User[];
+  createdAt: Date;
 }

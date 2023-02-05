@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Title, Button, Modal } from "@mantine/core";
+import { useEffect, useState } from "react";
+import { Title, Button, Modal, Loader, Text } from "@mantine/core";
 import Header from "../components/common/Header";
 
 import {
@@ -14,14 +14,27 @@ import RoomCard from "../components/RoomCard";
 import { container } from "../constants/variants";
 import { useMediaQuery } from "@mantine/hooks";
 import Page from "../components/common/Page";
+import { useQuery } from "react-query";
+import { api } from "../axios";
+import { RoomType } from "../interfaces";
 
 const Home = () => {
   // const controls = useAnimation();
+  const getRooms = async (): Promise<RoomType[]> => {
+    const { data } = await api("/rooms/all");
+    return data.rooms;
+  };
+
+  const roomsQuery = useQuery("rooms", getRooms);
 
   const isMobile = useMediaQuery("(max-width: 600px)");
   const [opened, setOpened] = useState<boolean>(false);
   const openModal = () => setOpened(true);
   const closeModal = () => setOpened(false);
+
+  // useEffect(() => {
+  //   console.log(roomsQuery);
+  // }, []);
   return (
     <Page>
       <motion.div layout>
@@ -62,51 +75,53 @@ const Home = () => {
               </Button>
             </motion.div>
           </motion.div>
-          <motion.div
-            layout
-            variants={container}
-            initial="hidden"
-            animate="visible"
-            // animate={control}
-            className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 gap-2 my-4"
-          >
-            <RoomCard />
-            <RoomCard />
-            <RoomCard />
-            <RoomCard />
-            <RoomCard />
-            <RoomCard />
-            <RoomCard />
-            <RoomCard />
-            <RoomCard />
-            <RoomCard />
-            <RoomCard />
-            <RoomCard />
-            <RoomCard />
-            <RoomCard />
-            <RoomCard />
-            <RoomCard />
-          </motion.div>
-          {/* <div
-            className="flex items-center flex-col gap-2 justify-center w-full"
-            style={{
-              height: "calc(100vh - 160px)",
-            }}
-          >
-            <Loader color="indigo" />
-            <Text>
-              There's no room. Be the first to{" "}
-              <span
-                onClick={openModal}
-                className="text-blue-600 cursor-pointer font-bold"
-              >
-                create one
-              </span>
-            </Text>
-            <Text className="text-xs text-slate-800">Loading Rooms...</Text>
-          </div> */}
+          {roomsQuery.data && (
+            <motion.div
+              layout
+              variants={container}
+              initial="hidden"
+              animate="visible"
+              // animate={control}
+              className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 gap-2 my-4"
+            >
+              {roomsQuery.data.map((room) => (
+                <RoomCard key={room._id} room={room} />
+              ))}
+            </motion.div>
+          )}
+          {roomsQuery.isLoading && (
+            <div
+              className="flex items-center flex-col gap-2 justify-center w-full"
+              style={{
+                height: "calc(100vh - 160px)",
+              }}
+            >
+              <Loader color="indigo" />
+
+              <Text className="text-xs text-slate-800">Loading Rooms...</Text>
+            </div>
+          )}
+          {!roomsQuery.isLoading && roomsQuery.data?.length === 0 && (
+            <div
+              className="flex items-center flex-col gap-2 justify-center w-full"
+              style={{
+                height: "calc(100vh - 160px)",
+              }}
+            >
+              <Text>
+                There&rsquo;s no room. Be the first to{" "}
+                <span
+                  onClick={openModal}
+                  className="text-blue-600 cursor-pointer font-bold"
+                >
+                  create one
+                </span>
+              </Text>
+            </div>
+          )}
         </motion.div>
       </motion.div>
+
       <Modal
         opened={opened}
         fullScreen={isMobile}
