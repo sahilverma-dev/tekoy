@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Room, RoomType } from "../models/RoomModel";
+import { Room } from "../models/RoomModel";
 
 export const createRoom = async (req: Request, res: Response) => {
   try {
@@ -9,6 +9,7 @@ export const createRoom = async (req: Request, res: Response) => {
       thumbnail,
       user: req.body.user?.id,
     });
+
     res.send({
       message: "room created",
       room: newRoom,
@@ -23,25 +24,26 @@ export const createRoom = async (req: Request, res: Response) => {
 
 export const getRoom = async (req: Request, res: Response) => {
   const { roomId } = req.params;
-  const room = await Room.findById(roomId);
+  const room = await Room.findById(roomId)
+    .populate("user", "name id email authProvider avatar")
+    .populate("listeners", "name id email authProvider avatar");
   if (room) {
-    res.status(200).json({ room });
+    res.status(200).json({
+      room,
+    });
   } else {
     res.status(400).json({ message: "Something went wrong" });
   }
 };
 
 export const getRooms = async (req: Request, res: Response) => {
-  const rooms = await Room.find();
+  const rooms = await Room.find().populate(
+    "user",
+    "name id email authProvider avatar"
+  );
   if (rooms) {
     res.status(200).json({
-      rooms: rooms?.map((room) => ({
-        id: room._id,
-        title: room.title,
-        thumbnail: room.thumbnail,
-        listeners: room.listeners,
-        createdAt: room.createdAt,
-      })),
+      rooms,
     });
   } else {
     res.status(400).json({ message: "Something went wrong" });
@@ -63,18 +65,11 @@ export const updateRoom = async (req: Request, res: Response) => {
             thumbnail,
           },
           { new: true }
-        );
+        ).populate("user", "name id email authProvider avatar");
         if (newRoom)
           res.status(200).json({
             message: "room updated",
-            room: {
-              id: newRoom._id,
-              title: newRoom.title,
-              thumbnail: newRoom.thumbnail,
-              user: newRoom.user,
-              listeners: newRoom.listeners,
-              createdAt: newRoom.createdAt,
-            },
+            room: newRoom,
           });
         else
           res.status(400).json({
