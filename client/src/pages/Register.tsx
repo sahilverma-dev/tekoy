@@ -11,7 +11,7 @@ import { showNotification } from "@mantine/notifications";
 // icons
 import { FcGoogle as GoogleIcon } from "react-icons/fc";
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/authContext";
+import { useAuth } from "../context/AuthContext";
 import { FormEvent } from "react";
 import Page from "../components/common/Page";
 
@@ -153,7 +153,11 @@ const Register = () => {
               <Button
                 type="button"
                 size="md"
-                onClick={loginWithGoogle}
+                // onClick={loginWithGoogle}
+                onClick={() => {
+                  console.log("hello");
+                  loginWithGoogle();
+                }}
                 loading={isLoading}
                 disabled={!form.values.terms}
                 className="border border-black/30 hover:bg-black hover:text-white text-black active:bg-zinc-700 active:text-white w-full rounded-full font-bold transition-all"

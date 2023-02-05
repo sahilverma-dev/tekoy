@@ -26,15 +26,7 @@ interface AuthContextProps {
   logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextProps>({
-  user: null,
-  isLoading: false,
-  loginWithGoogle: () => {},
-  loginWithEmailPassword: () => {},
-  registerWithEmailPassword: () => {},
-  loginAsRandomUser: () => {},
-  logout: () => {},
-});
+const AuthContext = createContext<AuthContextProps | null>(null);
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
   const [user, setUser] = useState<IUser | null>(null);
@@ -196,6 +188,8 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     if (token) {
       const decoded: IUser = decode(token);
       setUser(decoded);
+    } else {
+      logout();
     }
   }, []);
   return (

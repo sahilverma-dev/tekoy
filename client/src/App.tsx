@@ -6,7 +6,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Room from "./pages/Room";
 import Profile from "./pages/Profile";
-import { useAuth } from "./context/authContext";
+import { useAuth } from "./context/AuthContext";
 import { AnimatePresence } from "framer-motion";
 
 const App = () => {

@@ -4,7 +4,7 @@ import { Title, TextInput, PasswordInput, Button } from "@mantine/core";
 // icons
 import { FcGoogle as GoogleIcon } from "react-icons/fc";
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/authContext";
+import { useAuth } from "../context/AuthContext";
 import { useForm } from "@mantine/form";
 import Page from "../components/common/Page";
 

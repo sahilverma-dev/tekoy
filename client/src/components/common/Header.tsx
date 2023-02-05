@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 import { FaUserCircle as ProfileIcon } from "react-icons/fa";
 import { FiPower as LogoutIcon } from "react-icons/fi";
-import { useAuth } from "../../context/authContext";
+import { useAuth } from "../../context/AuthContext";
 
 const Header = () => {
   const { user, logout } = useAuth();
