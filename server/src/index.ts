@@ -6,7 +6,7 @@ import "colors";
 import { connectDB } from "./config/db";
 
 // importing routes
-import { userRoute } from "./routes/user";
+import { userRoute } from "./routes/userRoute";
 import { roomRoute } from "./routes/roomRoute";
 
 // configure dotenv

@@ -3,8 +3,9 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-import { User } from "../models/UserModel";
 import axios from "axios";
+
+import { User } from "../models/UserModel";
 
 const loginUser = async (req: Request, res: Response) => {
   // Find user with matching email
@@ -16,33 +17,40 @@ const loginUser = async (req: Request, res: Response) => {
     });
   }
 
-  // Compare provided password with user's hashed password
-  const passwordMatch = await bcrypt.compare(password, user.password);
-  if (!passwordMatch) {
-    return res.status(401).send({
-      error: "Incorrect password",
+  if (user.authProvider === "Email/Password") {
+    // Compare provided password with user's hashed password
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return res.status(401).send({
+        error: "Incorrect password",
+      });
+    }
+
+    if (!process.env.JWT_SECRET) {
+      process.env.JWT_SECRET = "my-secret";
+    }
+
+    const payload = {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      authProvider: user.authProvider,
+      avatar: user.avatar,
+      verified: user.verified,
+    };
+
+    // Generate JWT and send it as a response
+    const token = jwt.sign(payload, process.env.JWT_SECRET);
+    res.send({
+      message: "Login successful",
+      user: payload,
+      token,
+    });
+  } else {
+    res.status(400).send({
+      message: "Email Used by other Auth Provider",
     });
   }
-
-  if (!process.env.JWT_SECRET) {
-    process.env.JWT_SECRET = "my-secret";
-  }
-  const payload = {
-    id: user._id,
-    name: user.name,
-    email: user.email,
-    authProvider: user.authProvider,
-    avatar: user.avatar,
-    verified: user.verified,
-  };
-
-  // Generate JWT and send it as a response
-  const token = jwt.sign(payload, process.env.JWT_SECRET || "", {expiresIn: "1d"});
-  res.send({
-    message: "Login successful",
-    token,
-    user: payload
-  });
 };
 
 const registerUser = async (req: Request, res: Response) => {
@@ -62,23 +70,15 @@ const registerUser = async (req: Request, res: Response) => {
       });
     } else {
       // Send error response with message indicating email is already in use by other auth provider
-      res
-        .status(400)
-        .json({ error: "Email Already Used by other Auth Provider" });
+      res.status(400).json({
+        message: "Email Already Used by other Auth Provider",
+      });
     }
   } else {
     // Hash the password
     const salt = await bcrypt.genSalt(15);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create the new user
-    const user = new User({
-      email,
-      name,
-      password: hashedPassword,
-      authProvider: "Email/Password",
-      verified: false,
-    });
     // Creating new User
     const newUser = await User.create({
       name,
@@ -155,7 +155,7 @@ const randomUser = async (req: Request, res: Response) => {
       });
     }
   } catch (error: any) {
-    console.log(error);
+    console.log(error.message.red);
     res.status(500).send({
       error: error.message,
     });
@@ -164,74 +164,61 @@ const randomUser = async (req: Request, res: Response) => {
 
 const loginWithGoogle = async (req: Request, res: Response) => {
   try {
-    const { email, id, name, avatar } = req.body;
+    const { id, name, email, avatar } = req.body;
 
-    // Finding user with email
+    // Check if user with provided email already exists
     const user = await User.findOne({ email });
-
     if (user) {
-      // Generate JWT for the user
+      // Create a payload with the user's name, email, id, avatar, and authProvider
       const payload = {
-        id: user._id,
         name: user.name,
         email: user.email,
-        authProvider: user.authProvider,
+        id: user._id,
         avatar: user.avatar,
-        verified: user.verified,
+        authProvider: user.authProvider,
       };
 
-      const token = jwt.sign(payload, process.env.JWT_SECRET || "", {
-        expiresIn: "1d",
-      });
+      // Sign a JWT with the payload and secret key
+      const token = jwt.sign(payload, process.env.JWT_SECRET || "");
 
-      // Send response with user data and JWT
-      res.status(200).json({
+      // Send a response with the user's data and JWT
+      res.send({
         user: payload,
         token,
-        message: "User logged in",
       });
     } else {
-      // Create new user
+      // If user with provided id does not exist, create a new user with the provided id
+
       const newUser = await User.create({
         name,
-        email,
         authProvider: "Google",
-        avatar,
-        verified: false,
         password: id,
+        email,
+        avatar,
       });
+
       if (newUser) {
-        // Generate JWT for the new user
+        // Create a payload with the user's name, email, id, avatar, and authProvider
         const payload = {
-          id: newUser._id,
           name: newUser.name,
           email: newUser.email,
-          authProvider: newUser.authProvider,
+          id: newUser._id,
           avatar: newUser.avatar,
-          verified: newUser.verified,
+          authProvider: newUser.authProvider,
         };
-        const token = jwt.sign(payload, process.env.JWT_SECRET || "", {
-          expiresIn: "1d",
-        });
 
-        // Send response with user data and JWT
-        res.status(200).json({
-          user: payload,
+        // Sign a JWT with the payload and secret key
+        const token = jwt.sign(payload, process.env.JWT_SECRET || "");
+
+        // Send a response with the user's data and JWT
+        res.send({
+          user: newUser,
           token,
-          message: "New user created",
-        });
-      } else {
-        // Send response error
-        res.status(200).json({
-          user: null,
-          token: null,
-          message: "Failed to generate new user",
         });
       }
     }
   } catch (error: any) {
     console.log(error.message.red);
-
     res.send({
       error: error.message,
     });
