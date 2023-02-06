@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { Box, Button, Group, Select, Text, TextInput } from "@mantine/core";
+import {
+  Box,
+  Button,
+  Group,
+  Progress,
+  Select,
+  Text,
+  TextInput,
+} from "@mantine/core";
 import { motion, AnimatePresence } from "framer-motion";
 import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 
@@ -11,6 +19,7 @@ import {
 import { container, item } from "../constants/variants";
 import { images } from "../constants/images";
 import { useForm } from "@mantine/form";
+import axios from "axios";
 
 const visibilityData = [
   {
@@ -29,6 +38,28 @@ const visibilityData = [
 
 const CreateRoom = () => {
   const [selectFromLibrary, setSelectFromLibrary] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const uploadImage = async (image: any) => {
+    setIsLoading(true);
+    const formData = new FormData();
+    formData.append("image", image);
+    const { data } = await axios({
+      url: "https://api.imgbb.com/1/upload",
+      params: {
+        key: "0807eea7499eb0040ce1a0cdd7ec7abc",
+      },
+      method: "POST",
+      data: formData,
+    });
+    setIsLoading(false);
+    form.setValues({
+      ...form.values,
+      thumbnail: data.display_url,
+    });
+    console.log(data);
+  };
+
   const form = useForm({
     initialValues: {
       title: "",
@@ -110,8 +141,15 @@ const CreateRoom = () => {
         ) : (
           <motion.div className="flex items-center w-full min-h-[400px]">
             {form.values.image ? (
-              <div>
-                <div className="aspect-video relative rounded-md overflow-hidden border">
+              <div className="mx-auto">
+                {isLoading && <Progress value={100} animate />}
+                <div
+                  className={`aspect-video max-w-xl relative rounded-md overflow-hidden border mx-auto ${
+                    isLoading
+                      ? "opacity-50 pointer-events-none cursor-wait"
+                      : ""
+                  }`}
+                >
                   <div className="overlay" />
                   <img
                     src={URL.createObjectURL(form.values.image)}
@@ -119,10 +157,12 @@ const CreateRoom = () => {
                     className="h-full w-full object-cover origin-center"
                   />
                 </div>
-                <div>
+                <div className="flex my-2 items-center gap-2">
                   <Button
                     type="button"
+                    size="xs"
                     variant="default"
+                    loading={isLoading}
                     className="bg-red-500 text-white"
                     onClick={() =>
                       form.setValues({
@@ -132,6 +172,16 @@ const CreateRoom = () => {
                     }
                   >
                     Clear
+                  </Button>
+                  <Button
+                    type="button"
+                    size="xs"
+                    variant="default"
+                    loading={isLoading}
+                    className="bg-green-800 text-white"
+                    onClick={() => uploadImage(form.values.image)}
+                  >
+                    Upload
                   </Button>
                 </div>
               </div>
