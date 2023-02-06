@@ -8,8 +8,12 @@ import {
 } from "framer-motion";
 
 // icons
-import { BiSearch as SearchIcon } from "react-icons/bi";
+import {
+  BiSearch as SearchIcon,
+  BiRefresh as RefreshIcon,
+} from "react-icons/bi";
 import { HiPlus as AddIcon } from "react-icons/hi";
+
 import RoomCard from "../components/RoomCard";
 import { container } from "../constants/variants";
 import { useMediaQuery } from "@mantine/hooks";
@@ -82,7 +86,7 @@ const Home = () => {
               initial="hidden"
               animate="visible"
               // animate={control}
-              className="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 gap-2 my-4"
+              className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 gap-2 my-4"
             >
               {roomsQuery.data.map((room) => (
                 <RoomCard key={room._id} room={room} />
@@ -99,6 +103,32 @@ const Home = () => {
               <Loader color="indigo" />
 
               <Text className="text-xs text-slate-800">Loading Rooms...</Text>
+            </div>
+          )}
+          {roomsQuery.isLoadingError && (
+            <div
+              className="flex items-center flex-col gap-2 justify-center w-full"
+              style={{
+                height: "calc(100vh - 160px)",
+              }}
+            >
+              <img
+                src="https://uxwing.com/wp-content/themes/uxwing/download/signs-and-symbols/warning-icon.png"
+                alt=""
+                className="h-20"
+              />
+              <Text className="text-lg font-bold text-slate-800">
+                Failed to load Room{" "}
+              </Text>
+              <Button
+                variant="default"
+                radius="md"
+                leftIcon={<RefreshIcon className="text-lg" />}
+                className="bg-primary hover:bg-purple-900 text-white"
+                onClick={() => roomsQuery.refetch()}
+              >
+                Re-load
+              </Button>
             </div>
           )}
           {!roomsQuery.isLoading && roomsQuery.data?.length === 0 && (

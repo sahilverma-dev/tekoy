@@ -31,7 +31,7 @@ const RoomCard = ({ room }: PropsType) => {
         <Link to={`/user/${room.user._id}`}>
           <Tooltip label={`${room.user.name} is Speaking`} withArrow>
             <Avatar
-              className="absolute bottom-0 right-2 translate-y-1/2 z-20 border border-black shadow-md hover:scale-125 transition-all"
+              className="absolute bottom-0 right-2 translate-y-1/2 z-20 shadow-md hover:scale-125 transition-all aspect-square h-12 w-12"
               src={room.user.avatar}
               alt={room.user.name}
               radius="xl"
@@ -50,14 +50,14 @@ const RoomCard = ({ room }: PropsType) => {
                       src={listener.avatar}
                       alt={listener.name}
                       radius="xl"
-                      size="sm"
-                      className="hover:scale-125 transition-all"
+                      size="md"
+                      className="hover:scale-125 transition-all border border-black"
                     />
                   </Tooltip>
                 </Link>
               ))}
             </Avatar.Group>
-            <Text className="text-xs text-slate-600 ">
+            <Text className="text-sm text-slate-600 ">
               {room.listeners.length - 3 === 0
                 ? "listeners"
                 : `+${room.listeners.length - 3} listeners`}
