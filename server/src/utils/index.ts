@@ -1,3 +1,4 @@
-import jwt from 'jsonwebtoken'
+import jwt from "jsonwebtoken";
 
-export const isTokenValid = (token: string) => jwt.verify(token, process.env.JWT_SECRET || '')
+export const isTokenValid = (token: string) =>
+  jwt.verify(token, process.env.JWT_SECRET || "");
