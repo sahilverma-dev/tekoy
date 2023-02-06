@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Box, Button, Group, Select, Text, TextInput } from "@mantine/core";
 import { motion, AnimatePresence } from "framer-motion";
-import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
+import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 
 // icons
 import {
@@ -32,6 +32,7 @@ const CreateRoom = () => {
   const form = useForm({
     initialValues: {
       title: "",
+      image: null,
       visibility: visibilityData[0].value,
     },
   });
@@ -91,43 +92,78 @@ const CreateRoom = () => {
           </div>
         ) : (
           <motion.div className="flex items-center w-full min-h-[400px]">
-            <Dropzone
-              onDrop={(files) => console.log("accepted files", files)}
-              onReject={(files) => console.log("rejected files", files)}
-              maxSize={3 * 1024 ** 2}
-              accept={IMAGE_MIME_TYPE}
-              multiple={false}
-              className="max-w-3xl w-full mx-auto"
-            >
-              <Group
-                position="center"
-                spacing="xl"
-                style={{
-                  minHeight: 250,
-                  pointerEvents: "none",
-                }}
-              >
-                <Dropzone.Accept>
-                  <ImageIcon size={50} className="text-blue-500" />
-                </Dropzone.Accept>
-                <Dropzone.Reject>
-                  <ImageOutlineIcon size={50} className="text-red-500" />
-                </Dropzone.Reject>
-                <Dropzone.Idle>
-                  <ImageIcon size={50} />
-                </Dropzone.Idle>
-
-                <div>
-                  <Text size="xl" inline>
-                    Drag images here or click to select files
-                  </Text>
-                  <Text size="sm" color="dimmed" inline mt={7}>
-                    Attach as many files as you like, each file should not
-                    exceed 5mb
-                  </Text>
+            {form.values.image ? (
+              <div>
+                <div className="aspect-video relative rounded-md overflow-hidden border">
+                  <div className="overlay" />
+                  <img
+                    src={URL.createObjectURL(form.values.image)}
+                    alt=""
+                    className="h-full w-full object-cover origin-center"
+                  />
                 </div>
-              </Group>
-            </Dropzone>
+                <div>
+                  <Button
+                    type="button"
+                    variant="default"
+                    className="bg-red-500 text-white"
+                    onClick={() =>
+                      form.setValues({
+                        ...form.values,
+                        image: null,
+                      })
+                    }
+                  >
+                    Clear
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <Dropzone
+                onDrop={(files: FileWithPath[]) => {
+                  form.setValues({
+                    ...form.values,
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore reason Type 'FileWithPath' is not assignable to type 'null | undefined'.
+                    image: files[0],
+                  });
+                }}
+                onReject={(files) => console.log("rejected files", files)}
+                maxSize={3 * 1024 ** 2}
+                accept={IMAGE_MIME_TYPE}
+                multiple={false}
+                className="max-w-3xl w-full mx-auto"
+              >
+                <Group
+                  position="center"
+                  spacing="xl"
+                  style={{
+                    minHeight: 250,
+                    pointerEvents: "none",
+                  }}
+                >
+                  <Dropzone.Accept>
+                    <ImageIcon size={50} className="text-blue-500" />
+                  </Dropzone.Accept>
+                  <Dropzone.Reject>
+                    <ImageOutlineIcon size={50} className="text-red-500" />
+                  </Dropzone.Reject>
+                  <Dropzone.Idle>
+                    <ImageIcon size={50} />
+                  </Dropzone.Idle>
+
+                  <div>
+                    <Text size="xl" inline>
+                      Drag images here or click to select files
+                    </Text>
+                    <Text size="sm" color="dimmed" inline mt={7}>
+                      Attach as many files as you like, each file should not
+                      exceed 5mb
+                    </Text>
+                  </div>
+                </Group>
+              </Dropzone>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
