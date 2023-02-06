@@ -32,6 +32,7 @@ const CreateRoom = () => {
   const form = useForm({
     initialValues: {
       title: "",
+      thumbnail: "",
       image: null,
       visibility: visibilityData[0].value,
     },
@@ -72,21 +73,37 @@ const CreateRoom = () => {
               variants={container}
               initial="hidden"
               animate="visible"
-              className="grid sm:grid-cols-2 md:grid-cols-3 gap-3 w-full h-[500px] mb:h-[400px] overflow-y-scroll"
+              className="grid sm:grid-cols-2 p-2 md:grid-cols-3 gap-3 w-full h-[500px] mb:h-[400px] overflow-y-scroll"
             >
               {images.map((image) => (
-                <motion.div
+                <motion.button
+                  onClick={() => {
+                    form.setValues({
+                      ...form.values,
+                      thumbnail: image.src,
+                    });
+                  }}
                   variants={item}
                   key={image.src}
-                  className="relative aspect-video cursor-pointer border"
+                  className={`relative group aspect-video cursor-pointer shadow-xl rounded-md ${
+                    form.values.thumbnail === image.src
+                      ? "outline outline-4 outline-blue-500 shadow-lg shadow-blue-500/50"
+                      : ""
+                  }`}
                 >
-                  <div className="overlay rounded-md" />
+                  <div
+                    className={`absolute h-full w-full inset-0 group-hover:bg-black/0 transition-all rounded-md ${
+                      form.values.thumbnail === image.src
+                        ? "bg-black/0"
+                        : "bg-black/70 "
+                    } `}
+                  />
                   <img
                     src={image.src}
                     alt="thumbnail"
                     className="h-full w-full object-center object-cover rounded-md"
                   />
-                </motion.div>
+                </motion.button>
               ))}
             </motion.div>
           </div>
