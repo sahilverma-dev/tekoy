@@ -10,15 +10,16 @@ export const images = [
   //   height: 3,
   // },
   {
-    src: "https://cdn.pixabay.com/photo/2018/01/14/23/12/nature-3082832_960_720.jpg",
+    src: "https://wallpapercave.com/wp/KlszwLW.jpg",
     width: 4,
     height: 3,
   },
   {
-    src: "https://source.unsplash.com/2ShvY8Lf6l0/800x599",
+    src: "https://cdn.pixabay.com/photo/2018/01/14/23/12/nature-3082832_960_720.jpg",
     width: 4,
     height: 3,
   },
+
   {
     src: "https://source.unsplash.com/Dm-qxdynoEc/800x799",
     width: 1,
