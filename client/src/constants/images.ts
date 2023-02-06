@@ -1,5 +1,20 @@
 export const images = [
   {
+    src: "https://c4.wallpaperflare.com/wallpaper/500/442/354/outrun-vaporwave-hd-wallpaper-preview.jpg",
+    width: 4,
+    height: 3,
+  },
+  // {
+  //   src: "https://www.teahub.io/photos/full/8-83091_hd-wallpapers-1080p-widescreen-free-download-top-hdq.jpg",
+  //   width: 4,
+  //   height: 3,
+  // },
+  {
+    src: "https://cdn.pixabay.com/photo/2018/01/14/23/12/nature-3082832_960_720.jpg",
+    width: 4,
+    height: 3,
+  },
+  {
     src: "https://source.unsplash.com/2ShvY8Lf6l0/800x599",
     width: 4,
     height: 3,

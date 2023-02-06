@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Title, Button, Modal, Loader, Text } from "@mantine/core";
+
 import Header from "../components/common/Header";
 
 import {
@@ -11,16 +12,18 @@ import {
 import {
   BiSearch as SearchIcon,
   BiRefresh as RefreshIcon,
+  // BiImageAlt as ImageIcon,
 } from "react-icons/bi";
 import { HiPlus as AddIcon } from "react-icons/hi";
 
 import RoomCard from "../components/RoomCard";
-import { container } from "../constants/variants";
+import { container, item } from "../constants/variants";
 import { useMediaQuery } from "@mantine/hooks";
 import Page from "../components/common/Page";
 import { useQuery } from "react-query";
 import { api } from "../axios";
 import { RoomType } from "../interfaces";
+import CreateRoom from "../components/CreateRoom";
 
 const Home = () => {
   // const controls = useAnimation();
@@ -79,7 +82,7 @@ const Home = () => {
               </Button>
             </motion.div>
           </motion.div>
-          {roomsQuery.data && (
+          {/* {roomsQuery.data && (
             <motion.div
               layout
               variants={container}
@@ -92,7 +95,7 @@ const Home = () => {
                 <RoomCard key={room._id} room={room} />
               ))}
             </motion.div>
-          )}
+          )} */}
           {roomsQuery.isLoading && (
             <div
               className="flex items-center flex-col gap-2 justify-center w-full"
@@ -157,18 +160,21 @@ const Home = () => {
         fullScreen={isMobile}
         centered
         color="red"
-        // overlayColor={theme.colorScheme === 'dark' ? theme.colors.dark[9] : theme.colors.gray[2]}
         overlayOpacity={0.8}
         overlayBlur={3}
-        size="80%"
         overflow="inside"
         onClose={closeModal}
         title="Create new Room"
         transition="fade"
         transitionDuration={600}
         transitionTimingFunction="ease"
+        classNames={{
+          title: "font-bold",
+          modal: "w-full max-w-5xl transition-all",
+          // body: "bg-white",
+        }}
       >
-        {/* Modal content */}
+        <CreateRoom />
       </Modal>
     </Page>
   );
