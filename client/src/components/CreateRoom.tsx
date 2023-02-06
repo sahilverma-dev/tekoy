@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import {
   Box,
   Button,
   Group,
   Progress,
+  ScrollArea,
   Select,
   Text,
   TextInput,
@@ -20,6 +21,9 @@ import { container, item } from "../constants/variants";
 import { images } from "../constants/images";
 import { useForm } from "@mantine/form";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { api } from "../api";
 
 const visibilityData = [
   {
@@ -36,9 +40,17 @@ const visibilityData = [
   },
 ];
 
-const CreateRoom = () => {
+// props
+interface PropType {
+  close: () => void;
+}
+
+const CreateRoom = ({ close }: PropType) => {
+  const { user } = useAuth();
+
   const [selectFromLibrary, setSelectFromLibrary] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const uploadImage = async (image: any) => {
     setIsLoading(true);
@@ -55,9 +67,9 @@ const CreateRoom = () => {
     setIsLoading(false);
     form.setValues({
       ...form.values,
-      thumbnail: data.display_url,
+      thumbnail: data.data.display_url,
     });
-    console.log(data);
+    // console.log(data.);
   };
 
   const form = useForm({
@@ -69,8 +81,29 @@ const CreateRoom = () => {
     },
   });
 
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (user) {
+      const { data } = await api({
+        url: "/rooms/create",
+        method: "post",
+        headers: {
+          Authorization: `Berear ${user.token}`,
+        },
+        data: {
+          title: form.values.title,
+          thumbnail: form.values.thumbnail,
+          visibility: form.values.visibility,
+        },
+      });
+      navigate(`/room/${data.room._id}`);
+
+      console.log(data);
+    }
+  };
+
   return (
-    <>
+    <form onSubmit={handleSubmit}>
       <Box className="flex items-center w-full gap-2">
         <TextInput
           label="Room Title"
@@ -99,45 +132,48 @@ const CreateRoom = () => {
       </Box>
       <AnimatePresence initial={false}>
         {selectFromLibrary ? (
-          <div>
-            <motion.div
-              variants={container}
-              initial="hidden"
-              animate="visible"
-              className="grid sm:grid-cols-2 p-2 md:grid-cols-3 gap-3 w-full h-[500px] mb:h-[400px] overflow-y-scroll"
-            >
-              {images.map((image) => (
-                <motion.button
-                  onClick={() => {
-                    form.setValues({
-                      ...form.values,
-                      thumbnail: image.src,
-                    });
-                  }}
-                  variants={item}
-                  key={image.src}
-                  className={`relative group aspect-video cursor-pointer shadow-xl rounded-md ${
-                    form.values.thumbnail === image.src
-                      ? "outline outline-4 outline-blue-500 shadow-lg shadow-blue-500/50"
-                      : ""
-                  }`}
-                >
-                  <div
-                    className={`absolute h-full w-full inset-0 group-hover:bg-black/0 transition-all rounded-md ${
+          <motion.div>
+            <ScrollArea style={{ height: 500 }}>
+              <motion.div
+                variants={container}
+                initial="hidden"
+                animate="visible"
+                className="grid sm:grid-cols-2 p-2 md:grid-cols-3 gap-3 w-full "
+              >
+                {images.map((image) => (
+                  <motion.button
+                    type="button"
+                    onClick={() => {
+                      form.setValues({
+                        ...form.values,
+                        thumbnail: image.src,
+                      });
+                    }}
+                    variants={item}
+                    key={image.src}
+                    className={`relative group aspect-video cursor-pointer shadow-xl rounded-md ${
                       form.values.thumbnail === image.src
-                        ? "bg-black/0"
-                        : "bg-black/70 "
-                    } `}
-                  />
-                  <img
-                    src={image.src}
-                    alt="thumbnail"
-                    className="h-full w-full object-center object-cover rounded-md"
-                  />
-                </motion.button>
-              ))}
-            </motion.div>
-          </div>
+                        ? "outline outline-4 outline-blue-500 shadow-lg shadow-blue-500/50"
+                        : ""
+                    }`}
+                  >
+                    <div
+                      className={`absolute h-full w-full inset-0 group-hover:bg-black/0 transition-all rounded-md ${
+                        form.values.thumbnail === image.src
+                          ? "bg-black/0"
+                          : "bg-black/70 "
+                      } `}
+                    />
+                    <img
+                      src={image.src}
+                      alt="thumbnail"
+                      className="h-full w-full object-center object-cover rounded-md"
+                    />
+                  </motion.button>
+                ))}
+              </motion.div>
+            </ScrollArea>
+          </motion.div>
         ) : (
           <motion.div className="flex items-center w-full min-h-[400px]">
             {form.values.image ? (
@@ -163,11 +199,12 @@ const CreateRoom = () => {
                     size="xs"
                     variant="default"
                     loading={isLoading}
-                    className="bg-red-500 text-white"
+                    className="bg-red-500 hover:bg-red-800 text-white"
                     onClick={() =>
                       form.setValues({
                         ...form.values,
                         image: null,
+                        thumbnail: "",
                       })
                     }
                   >
@@ -178,7 +215,7 @@ const CreateRoom = () => {
                     size="xs"
                     variant="default"
                     loading={isLoading}
-                    className="bg-green-800 text-white"
+                    className="bg-green-700 hover:bg-green-900 text-white disabled:bg-green-500/50 disabled:text-white disabled:cursor-not-allowed"
                     onClick={() => uploadImage(form.values.image)}
                   >
                     Upload
@@ -234,7 +271,33 @@ const CreateRoom = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+      <div className="flex my-2 justify-end items-center gap-2">
+        <Button
+          type="button"
+          radius="md"
+          variant="default"
+          loading={isLoading}
+          className="bg-red-500 hover:bg-red-800 text-white"
+          onClick={close}
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          radius="md"
+          variant="default"
+          loading={isLoading}
+          className="bg-green-700 hover:bg-green-900 text-white disabled:bg-green-900 disabled:cursor-not-allowed"
+          disabled={
+            !form.values.title ||
+            !form.values.thumbnail ||
+            !form.values.visibility
+          }
+        >
+          Create Room
+        </Button>
+      </div>
+    </form>
   );
 };
 

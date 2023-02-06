@@ -174,7 +174,7 @@ const Home = () => {
           // body: "bg-white",
         }}
       >
-        <CreateRoom />
+        <CreateRoom close={closeModal} />
       </Modal>
     </Page>
   );
