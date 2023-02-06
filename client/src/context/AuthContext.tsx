@@ -7,13 +7,13 @@ import {
 } from "react";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
-import { IUser } from "../interfaces";
+import { IUser, User } from "../interfaces";
 import { api } from "../axios";
 import { showNotification } from "@mantine/notifications";
 import decode from "jwt-decode";
 
 interface AuthContextProps {
-  user: IUser | null;
+  user: User | null;
   isLoading: boolean;
   loginWithGoogle: () => void;
   loginWithEmailPassword: (email: string, password: string) => void;
@@ -29,7 +29,7 @@ interface AuthContextProps {
 const AuthContext = createContext<AuthContextProps | null>(null);
 
 export const AuthProvider = ({ children }: PropsWithChildren) => {
-  const [user, setUser] = useState<IUser | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const loginWithGoogle = useGoogleLogin({
@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         });
         console.log(data1);
         if (data1) {
-          setUser(data1.user);
+          setUser({ ...data1.user, token: data1.token });
           localStorage.setItem("token", data1?.token);
           showNotification({
             title: "Login Successful",
@@ -94,7 +94,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       });
       console.log(data);
       if (data) {
-        setUser(data.user);
+        setUser({ ...data.user, token: data.token });
         localStorage.setItem("token", data?.token);
         showNotification({
           title: "Login Successful",
@@ -131,7 +131,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       });
       console.log(data);
       if (data) {
-        setUser(data.user);
+        setUser({ ...data.user, token: data.token });
         localStorage.setItem("token", data?.token);
         showNotification({
           title: "Login Successful",
@@ -159,7 +159,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
       });
       console.log(data);
       if (data) {
-        setUser(data.user);
+        setUser({ ...data.user, token: data.token });
         localStorage.setItem("token", data?.token);
         showNotification({
           title: "Login Successful",
@@ -187,7 +187,10 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     const token = localStorage.getItem("token");
     if (token) {
       const decoded: IUser = decode(token);
-      setUser(decoded);
+      setUser({
+        ...decoded,
+        token,
+      });
     } else {
       logout();
     }

@@ -12,6 +12,7 @@ export interface User {
   email?: string;
   name?: string;
   avatar?: string;
+  token: string;
 }
 
 export interface AuthContextProps {
