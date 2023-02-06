@@ -82,7 +82,7 @@ const Home = () => {
               </Button>
             </motion.div>
           </motion.div>
-          {/* {roomsQuery.data && (
+          {roomsQuery.data && (
             <motion.div
               layout
               variants={container}
@@ -95,7 +95,7 @@ const Home = () => {
                 <RoomCard key={room._id} room={room} />
               ))}
             </motion.div>
-          )} */}
+          )}
           {roomsQuery.isLoading && (
             <div
               className="flex items-center flex-col gap-2 justify-center w-full"
