@@ -7,7 +7,11 @@ import {
   Tooltip,
   Select,
   TextInput,
+  Modal,
+  CopyButton,
 } from "@mantine/core";
+
+import QRCode from "react-qr-code";
 
 // framer motion
 import { AnimatePresence, motion } from "framer-motion";
@@ -27,6 +31,11 @@ import {
 } from "react-icons/bs";
 import { FiSend as SendIcon } from "react-icons/fi";
 import {
+  MdContentCopy as CopyIcon,
+  MdCheck as CheckIcon,
+} from "react-icons/md";
+
+import {
   IoMdShare as ShareIcon,
   IoMdExit as ExitIcon,
   IoMdClose as CloseIcon,
@@ -39,6 +48,7 @@ const Room = () => {
   const { roomID } = useParams();
   const [micActive, setMicActive] = useState<boolean>(false);
   const [messagesActive, setMessagesActive] = useState<boolean>(false);
+  const [showShare, setShowShare] = useState<boolean>(false);
 
   // let animatingMessages = messages.slice(lastChangedIndex);
 
@@ -144,7 +154,7 @@ const Room = () => {
               <div
                 className="overflow-y-scroll my-2"
                 style={{
-                  height: "calc(100vh - 212px)",
+                  height: "calc(100vh - 210px)",
                 }}
               >
                 <motion.ul
@@ -238,13 +248,13 @@ const Room = () => {
             <ChatIcon />
           </ActionIcon>
         </Tooltip>
-        <Tooltip label="Share the room">
+        <Tooltip label="Share the room" withArrow offset={10}>
           <ActionIcon
             size="xl"
             variant="default"
             radius="xl"
             className="border-0 text-zinc-200 bg-zinc-900 hover:bg-zinc-700"
-            onClick={() => setMessagesActive(false)}
+            onClick={() => setShowShare(true)}
           >
             <ShareIcon size={20} />
           </ActionIcon>
@@ -252,7 +262,7 @@ const Room = () => {
         <Select
           radius="md"
           variant="default"
-          // color="dark"
+          placeholder="Select Mic"
           size="md"
           classNames={{
             input: "bg-zinc-900 text-white border-0",
@@ -289,6 +299,47 @@ const Room = () => {
         </Button>
       </div>
       {/* <div className="!fixed bottom-0 overlay pointer-events-none"></div> */}
+      <Modal
+        opened={showShare}
+        title="Share the room"
+        radius="md"
+        centered
+        onClose={() => setShowShare(false)}
+        classNames={{
+          title: "font-bold",
+        }}
+      >
+        <div className="flex items-center gap-2">
+          <TextInput
+            readOnly
+            value={`${window.location.href}`}
+            className="w-full text-black"
+          />
+          <CopyButton value={window.location.href} timeout={2000}>
+            {({ copied, copy }) => (
+              <Tooltip
+                label={copied ? "Copied" : "Copy"}
+                withArrow
+                position="right"
+              >
+                <ActionIcon
+                  variant="default"
+                  size="lg"
+                  className={copied ? "text-green-700" : "text-black"}
+                  onClick={copy}
+                >
+                  {copied ? <CheckIcon size={16} /> : <CopyIcon size={16} />}
+                </ActionIcon>
+              </Tooltip>
+            )}
+          </CopyButton>
+        </div>
+
+        <QRCode
+          value={window.location.href}
+          className="h-56 aspect-square object-contain mx-auto my-4"
+        />
+      </Modal>
     </Page>
   );
 };
