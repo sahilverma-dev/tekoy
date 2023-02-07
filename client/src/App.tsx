@@ -26,10 +26,11 @@ const App = () => {
           element={user ? <Navigate to="/" replace /> : <Register />}
         />
         <Route
-          path="/room/roomID"
-          element={user ? <Room /> : <Navigate to="/login" replace />}
+          path="/room/:roomID"
+          // element={user ? <Room /> : <Navigate to="/login" replace />}
+          element={<Room />}
         />
-        <Route path="/user/userID" element={<Profile />} />
+        <Route path="/user/:userID" element={<Profile />} />
       </Routes>
     </AnimatePresence>
   );

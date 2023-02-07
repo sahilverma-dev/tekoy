@@ -56,3 +56,24 @@ export const item = {
     opacity: 1,
   },
 };
+
+export const messagesWindowVariants = {
+  enter: {
+    x: "0%",
+    opacity: 1,
+    transition: {
+      duration: 0.5,
+    },
+  },
+  stay: {
+    x: "0%",
+    opacity: 1,
+  },
+  exit: {
+    x: "100%",
+    opacity: 0,
+    transition: {
+      duration: 0.5,
+    },
+  },
+};
