@@ -8,6 +8,7 @@ import Room from "./pages/Room";
 import Profile from "./pages/Profile";
 import { useAuth } from "./context/AuthContext";
 import { AnimatePresence } from "framer-motion";
+import NotFound from "./pages/NotFound";
 
 const App = () => {
   const { user } = useAuth();
@@ -17,6 +18,7 @@ const App = () => {
     <AnimatePresence initial={false} presenceAffectsLayout>
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Home />} />
+        <Route path="*" element={<NotFound />} />
         <Route
           path="/login"
           element={user ? <Navigate to="/" replace /> : <Login />}

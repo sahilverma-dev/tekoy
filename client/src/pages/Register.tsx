@@ -1,9 +1,11 @@
+import { useState, FormEvent } from "react";
 import {
   Title,
   TextInput,
   PasswordInput,
   Checkbox,
   Button,
+  Modal,
 } from "@mantine/core";
 import { useForm } from "@mantine/form/";
 import { showNotification } from "@mantine/notifications";
@@ -12,10 +14,10 @@ import { showNotification } from "@mantine/notifications";
 import { FcGoogle as GoogleIcon } from "react-icons/fc";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { FormEvent } from "react";
 import Page from "../components/common/Page";
 
 const Register = () => {
+  const [showTNC, setShowTNC] = useState<boolean>(false);
   const form = useForm({
     initialValues: {
       email: "",
@@ -115,13 +117,12 @@ const Register = () => {
                 label={
                   <>
                     Accepts{" "}
-                    <Link
-                      to="/terms-and-conditions"
-                      target="_blank"
-                      className="font-bold text-blue-600"
+                    <span
+                      onClick={() => setShowTNC(true)}
+                      className="font-bold text-blue-600 cursor-pointer"
                     >
                       terms and conditions
-                    </Link>
+                    </span>
                   </>
                 }
               />
@@ -195,6 +196,99 @@ const Register = () => {
           className=" w-full max-w-[400px] aspect-square rounded-lg object-contain origin-center shadow-lg"
         />
       </div>
+      <Modal
+        opened={showTNC}
+        onClose={() => setShowTNC(false)}
+        title="Terms and Conditions"
+        centered
+        size="xl"
+        overflow="inside"
+        classNames={{
+          title: "font-bold",
+        }}
+      >
+        <div>
+          Welcome to Tekoy! These terms and conditions outline the rules and
+          regulations for the use of Tekoy&apos;s website and app.
+          <br />
+          By accessing this website or app, we assume you accept these terms and
+          conditions in full. If you do not agree with these terms and
+          conditions or any part of these terms and conditions, you must not use
+          this website or app.
+          <br />
+          Intellectual Property
+          <br />
+          Unless otherwise stated, we or our licensors own the intellectual
+          property rights in the website and app and material on the website and
+          app. Subject to the license below, all these intellectual property
+          rights are reserved.
+          <br />
+          License to use website and app
+          <br />
+          You may view, download for caching purposes only, and print pages from
+          the website or app for your own personal use, subject to the
+          restrictions set out below and elsewhere in these terms and
+          conditions.
+          <br />
+          You must not:
+          <br />
+          Republish material from this website or app (including republication
+          on another website or app); Sell, rent or sub-license material from
+          the website or app; Show any material from the website or app in
+          public; Reproduce, duplicate, copy or otherwise exploit material on
+          our website or app for a commercial purpose; Edit or otherwise modify
+          any material on the website or app; or Redistribute material from this
+          website or app except for content specifically and expressly made
+          available for redistribution. Where content is specifically made
+          available for redistribution, it may only be redistributed within your
+          organization.
+          <br />
+          Acceptable use
+          <br />
+          You must not use our website or app in any way that causes, or may
+          cause, damage to the website or app or impairment of the availability
+          or accessibility of the website or app; or in any way which is
+          unlawful, illegal, fraudulent or harmful, or in connection with any
+          unlawful, illegal, fraudulent or harmful purpose or activity.
+          <br />
+          You must not use our website or app to copy, store, host, transmit,
+          send, use, publish or distribute any material which consists of (or is
+          linked to) any spyware, computer virus, Trojan horse, worm, keystroke
+          logger, rootkit or other malicious computer software.
+          <br />
+          You must not conduct any systematic or automated data collection
+          activities (including without limitation scraping, data mining, data
+          extraction and data harvesting) on or in relation to our website or
+          app without our express written consent.
+          <br />
+          You must not use our website or app to transmit or send unsolicited
+          commercial communications.
+          <br />
+          You must not use our website or app for any purposes related to
+          marketing without our express written consent.
+          <br />
+          User-generated content
+          <br />
+          In these terms and conditions, &quot;your user content&quot; means
+          material (including without limitation text, images, audio material,
+          video material and audio-visual material) that you submit to our
+          website or app, for whatever purpose.
+          <br />
+          You grant to us a worldwide, irrevocable, non-exclusive, royalty-free
+          license to use, reproduce, adapt, publish, translate and distribute
+          your user content in any existing or future media. You also grant to
+          us the right to sub-license these rights, and the right to bring an
+          action for infringement of these rights.
+          <br />
+          Your user content must not be illegal or unlawful, must not infringe
+          any third party&apos;s legal rights, and must not be capable of giving
+          rise to legal action whether against you or us or a third party (in
+          each case under any applicable law).
+          <br />
+          You must not submit any user content to the website or app that is or
+          has ever been the
+        </div>
+      </Modal>
     </Page>
   );
 };
