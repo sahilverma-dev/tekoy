@@ -8,7 +8,7 @@ export interface IUser {
 }
 
 export interface User {
-  _id?: number;
+  id?: string;
   email?: string;
   name?: string;
   avatar?: string;

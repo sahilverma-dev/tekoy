@@ -41,8 +41,11 @@ import {
   IoMdClose as CloseIcon,
 } from "react-icons/io";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { messages } from "../constants/messages";
+import { useWebRTC } from "../hooks/useWebRTC";
+import { useAuth } from "../context/AuthContext";
+import { User } from "../interfaces";
 
 const Room = () => {
   const { roomID } = useParams();
@@ -50,8 +53,14 @@ const Room = () => {
   const [messagesActive, setMessagesActive] = useState<boolean>(false);
   const [showShare, setShowShare] = useState<boolean>(false);
 
+  const { user } = useAuth();
+  const { clients, provideRef } = useWebRTC(user, roomID);
+
   // let animatingMessages = messages.slice(lastChangedIndex);
 
+  useEffect(() => {
+    console.log(clients);
+  }, []);
   return (
     <Page>
       <RoomHeader title="Lorem ipsum dolor sit amet." />
@@ -87,6 +96,7 @@ const Room = () => {
             >
               {users.slice(0, 4).map((user, index) => (
                 <RoomUserCard
+                  provideRef={provideRef}
                   key={index}
                   user={{
                     token: "",
@@ -112,15 +122,11 @@ const Room = () => {
                 animate="visible"
                 className="grid grid-cols-5 sm:grid-cols-7 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-3 my-3"
               >
-                {users.map((user, index) => (
+                {clients.map((client: User) => (
                   <RoomUserCard
-                    key={index}
-                    user={{
-                      token: "",
-                      avatar: user.picture.medium,
-                      name: `${user.name.first} ${user.name.last}`,
-                      // _id: user.login.uuid,
-                    }}
+                    key={client.id}
+                    user={client}
+                    provideRef={provideRef}
                   />
                 ))}
               </motion.div>

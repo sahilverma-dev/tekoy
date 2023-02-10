@@ -9,9 +9,10 @@ import { getRandomColors } from "../utils";
 // props
 interface Props {
   user: User;
+  provideRef: any;
 }
 
-const RoomUserCard = ({ user }: Props) => {
+const RoomUserCard = ({ user, provideRef }: Props) => {
   return (
     <motion.div
       layout
@@ -26,9 +27,14 @@ const RoomUserCard = ({ user }: Props) => {
           borderColor: getRandomColors(),
         }}
       />
-      <Link to={`/user/${user?._id}`} className="font-bold w-full truncate">
+      <Link to={`/user/${user?.id}`} className="font-bold w-full truncate">
         {user.name}
       </Link>
+      <audio
+        src=""
+        ref={(instance) => provideRef(instance, user.id)}
+        autoPlay
+      />
     </motion.div>
   );
 };
