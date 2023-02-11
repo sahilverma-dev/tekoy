@@ -37,3 +37,7 @@ export interface RoomType {
   listeners: User[];
   createdAt: Date;
 }
+
+export interface ClientsType extends User {
+  muted: boolean;
+}

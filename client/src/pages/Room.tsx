@@ -10,6 +10,7 @@ import {
   Modal,
   CopyButton,
 } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 
 import QRCode from "react-qr-code";
 
@@ -54,13 +55,23 @@ const Room = () => {
   const [showShare, setShowShare] = useState<boolean>(false);
 
   const { user } = useAuth();
-  const { clients, provideRef } = useWebRTC(user, roomID);
+  const { clients, provideRef, handleMute } = useWebRTC(roomID, user);
 
-  // let animatingMessages = messages.slice(lastChangedIndex);
+  const handleMuteClick = (clientId: string) => {
+    if (clientId !== user?.id) {
+      return;
+    }
+    setMicActive(!micActive);
+  };
 
   useEffect(() => {
     console.log(clients);
-  }, []);
+  }, [clients]);
+
+  useEffect(() => {
+    if (user?.id) handleMute(micActive, user.id);
+  }, [micActive]);
+
   return (
     <Page>
       <RoomHeader title="Lorem ipsum dolor sit amet." />
@@ -92,12 +103,13 @@ const Room = () => {
               variants={container}
               initial="hidden"
               animate="visible"
-              className="grid grid-cols-5 sm:grid-cols-7 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-2 my-3"
+              className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-3 my-3"
             >
-              {users.slice(0, 4).map((user, index) => (
+              {/* {users.slice(0, 6).map((user, index) => (
                 <RoomUserCard
                   provideRef={provideRef}
                   key={index}
+                  isSpeaker={true}
                   user={{
                     token: "",
                     avatar: user.picture.medium,
@@ -105,7 +117,7 @@ const Room = () => {
                     // _id: user.login.uuid,
                   }}
                 />
-              ))}
+              ))} */}
             </motion.div>
           </div>
           <motion.div
@@ -122,11 +134,28 @@ const Room = () => {
                 animate="visible"
                 className="grid grid-cols-5 sm:grid-cols-7 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-3 my-3"
               >
+                {/* {users.map((user, index) => (
+                  <RoomUserCard
+                    provideRef={provideRef}
+                    key={index}
+                    isSpeaker={false}
+                    user={{
+                      token: "",
+                      avatar: user.picture.medium,
+                      name: `${user.name.first} ${user.name.last}`,
+                      // _id: user.login.uuid,
+                    }}
+                  />
+                ))} */}
                 {clients.map((client: User) => (
                   <RoomUserCard
                     key={client.id}
                     user={client}
                     provideRef={provideRef}
+                    isSpeaker={false}
+                    handleMuteClick={() =>
+                      client?.id && handleMuteClick(client?.id)
+                    }
                   />
                 ))}
               </motion.div>
@@ -298,6 +327,20 @@ const Room = () => {
         <Button
           size="md"
           radius="md"
+          onClick={() => {
+            showNotification({
+              message: `${user?.name} joined the room`,
+              classNames: {
+                body: "w-auto",
+              },
+              icon: (
+                <img
+                  src={user?.avatar}
+                  className="rounded-full h-7 block aspect-square shrink-0"
+                />
+              ),
+            });
+          }}
           className="bg-red-500 hover:bg-red-900"
           leftIcon={<ExitIcon size={18} />}
         >
