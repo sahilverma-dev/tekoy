@@ -9,7 +9,7 @@ import { connectDB } from "./config/db";
 // importing routes
 import { userRoute } from "./routes/userRoute";
 import { roomRoute } from "./routes/roomRoute";
-import { SOCKET_ACTIONS } from "./constants/socket-actions";
+import { ACTIONS } from "./constants/socket-actions";
 
 // configure dotenv
 dotenv.config();
@@ -40,24 +40,105 @@ app.use("/api/v1/rooms", roomRoute);
 console.clear();
 
 // sockets
-const socketUserMapping: any = {};
+
+// Sockets
+const socketUserMap: any = {};
 
 io.on("connection", (socket) => {
-  // console.log(socket.id.bgCyan);
-  socket.on(SOCKET_ACTIONS.JOIN, ({ roomId, user }) => {
-    console.log("joined");
-    socketUserMapping[socket.id] = user;
-    const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
-
-    console.log(clients);
-
-    clients.forEach((clientID) => {
-      io.to(clientID).emit(SOCKET_ACTIONS.ADD_PEER, {});
+  console.log("New connection", socket.id);
+  socket.on(ACTIONS.JOIN, ({ roomId, user }) => {
+    socketUserMap[socket.id] = user;
+    console.log({
+      user,
+      roomId,
     });
 
-    socket.emit(SOCKET_ACTIONS.ADD_PEER, {});
+    const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
+    clients.forEach((clientId) => {
+      io.to(clientId).emit(ACTIONS.ADD_PEER, {
+        peerId: socket.id,
+        createOffer: false,
+        user,
+      });
+      socket.emit(ACTIONS.ADD_PEER, {
+        peerId: clientId,
+        createOffer: true,
+        user: socketUserMap[clientId],
+      });
+    });
     socket.join(roomId);
   });
+
+  socket.on(ACTIONS.RELAY_ICE, ({ peerId, icecandidate }) => {
+    io.to(peerId).emit(ACTIONS.ICE_CANDIDATE, {
+      peerId: socket.id,
+      icecandidate,
+    });
+  });
+
+  socket.on(ACTIONS.RELAY_SDP, ({ peerId, sessionDescription }) => {
+    io.to(peerId).emit(ACTIONS.SESSION_DESCRIPTION, {
+      peerId: socket.id,
+      sessionDescription,
+    });
+  });
+
+  socket.on(ACTIONS.MUTE, ({ roomId, userId }) => {
+    const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
+    clients.forEach((clientId) => {
+      io.to(clientId).emit(ACTIONS.MUTE, {
+        peerId: socket.id,
+        userId,
+      });
+    });
+  });
+
+  socket.on(ACTIONS.UNMUTE, ({ roomId, userId }) => {
+    const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
+    clients.forEach((clientId) => {
+      io.to(clientId).emit(ACTIONS.UNMUTE, {
+        peerId: socket.id,
+        userId,
+      });
+    });
+  });
+
+  socket.on(ACTIONS.MUTE_INFO, ({ userId, roomId, isMute }) => {
+    const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
+    clients.forEach((clientId) => {
+      if (clientId !== socket.id) {
+        console.log("mute info");
+        io.to(clientId).emit(ACTIONS.MUTE_INFO, {
+          userId,
+          isMute,
+        });
+      }
+    });
+  });
+
+  const leaveRoom = () => {
+    const { rooms } = socket;
+    Array.from(rooms).forEach((roomId) => {
+      const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
+      clients.forEach((clientId) => {
+        io.to(clientId).emit(ACTIONS.REMOVE_PEER, {
+          peerId: socket.id,
+          userId: socketUserMap[socket.id]?.id,
+        });
+
+        // socket.emit(ACTIONS.REMOVE_PEER, {
+        //     peerId: clientId,
+        //     userId: socketUserMap[clientId]?.id,
+        // });
+      });
+      socket.leave(roomId);
+    });
+    delete socketUserMap[socket.id];
+  };
+
+  socket.on(ACTIONS.LEAVE, leaveRoom);
+
+  socket.on("disconnecting", leaveRoom);
 });
 
 server.listen(PORT, () => {
