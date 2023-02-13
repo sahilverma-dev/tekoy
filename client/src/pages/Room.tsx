@@ -111,10 +111,7 @@ const Room = () => {
   }, []);
   return (
     <Page>
-      <RoomHeader
-        thumbnail="https://c4.wallpaperflare.com/wallpaper/500/442/354/outrun-vaporwave-hd-wallpaper-preview.jpg"
-        title="Room title"
-      />
+      <RoomHeader title="Room title" />
       {/* {!roomQuery?.isLoading && <RoomHeader title={roomQuery.data?.title} />} */}
       <motion.div
         layout
