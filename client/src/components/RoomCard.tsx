@@ -28,7 +28,7 @@ const RoomCard = ({ room }: PropsType) => {
             }}
           />
         </Link>
-        <Link to={`/user/${room.user._id}`}>
+        <Link to={`/user/${room.user.id}`}>
           <Tooltip label={`${room.user.name} is Speaking`} withArrow>
             <Avatar
               className="absolute bottom-0 right-2 translate-y-1/2 z-20 shadow-md hover:scale-125 transition-all aspect-square h-12 w-12"
@@ -44,7 +44,7 @@ const RoomCard = ({ room }: PropsType) => {
           <>
             <Avatar.Group>
               {room.listeners.slice(0, 3).map((listener: User) => (
-                <Link key={listener._id} to={`/user/${listener._id}`}>
+                <Link key={listener.id} to={`/user/${listener.id}`}>
                   <Tooltip label={listener.name} withArrow className="text-xs">
                     <Avatar
                       src={listener.avatar}
