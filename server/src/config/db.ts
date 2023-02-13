@@ -4,10 +4,12 @@ mongoose.set("strictQuery", true);
 
 async function connectDB(): Promise<void> {
   try {
-    const conn = await mongoose.connect("mongodb://localhost:27017/tekoy");
-    console.log(`Database is connected to ${conn.connection.host}`.bgGreen);
-  } catch (error) {
-    console.error(`Error connecting to database: ${error}`);
+    if (process.env.MONGO_URI) {
+      const conn = await mongoose.connect(process.env.MONGO_URI);
+      console.log(`Database is connected to ${conn.connection.host}`.bgGreen);
+    }
+  } catch (error: any) {
+    console.log(error.message.red);
     process.exit(1);
   }
 }
