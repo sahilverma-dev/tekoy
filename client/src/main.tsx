@@ -25,7 +25,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
                 <App />
               </NotificationsProvider>
             </AuthProvider>
-            {/* <ReactQueryDevtools initialIsOpen /> */}
+            <ReactQueryDevtools initialIsOpen />
           </QueryClientProvider>
         </MantineProvider>
       </BrowserRouter>

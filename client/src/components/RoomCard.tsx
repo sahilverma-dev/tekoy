@@ -28,8 +28,8 @@ const RoomCard = ({ room }: PropsType) => {
             }}
           />
         </Link>
-        <Link to={`/user/${room.user.id}`}>
-          <Tooltip label={`${room.user.name} is Speaking`} withArrow>
+        <Link to={`/user/${room.user._id}`}>
+          <Tooltip label={`Room Created by ${room.user.name}`} withArrow>
             <Avatar
               className="absolute bottom-0 right-2 translate-y-1/2 z-20 shadow-md hover:scale-125 transition-all aspect-square h-12 w-12"
               src={room.user.avatar}
@@ -39,7 +39,7 @@ const RoomCard = ({ room }: PropsType) => {
           </Tooltip>
         </Link>
       </div>
-      <div className="flex gap-1 items-center my-1">
+      {/* <div className="flex gap-1 items-center my-1">
         {room.listeners.length > 0 ? (
           <>
             <Avatar.Group>
@@ -66,8 +66,8 @@ const RoomCard = ({ room }: PropsType) => {
         ) : (
           <Text className="text-xs text-slate-600 my-2">No Listeners</Text>
         )}
-      </div>
-      <Link to={`/room/${room._id}`}>
+      </div> */}
+      <Link to={`/room/${room._id}`} className="block my-7">
         <Title order={2} className="text-lg truncate">
           {room.title}
         </Title>

@@ -26,11 +26,11 @@ import {
 // props
 interface Props {
   user: User;
-  micActive: boolean;
+  muted: boolean;
   provideRef: any;
 }
 
-const RoomUserCard = ({ user, provideRef, micActive }: Props) => {
+const RoomUserCard = ({ user, provideRef, muted }: Props) => {
   return (
     <motion.div
       layout
@@ -81,12 +81,12 @@ const RoomUserCard = ({ user, provideRef, micActive }: Props) => {
           variant="default"
           radius="xl"
           className={`border-0 text-zinc-200 absolute bottom-1 right-1 ${
-            micActive
-              ? "bg-zinc-900 hover:bg-zinc-700"
-              : "bg-red-600 hover:bg-red-800"
+            muted
+              ? "bg-red-600 hover:bg-red-800"
+              : "bg-zinc-900 hover:bg-zinc-700"
           }`}
         >
-          {micActive ? <MicOnIcon size={10} /> : <MicOffIcon size={10} />}
+          {muted ? <MicOffIcon size={10} /> : <MicOnIcon size={10} />}
         </ActionIcon>
       </div>
       <Tooltip

@@ -1,23 +1,24 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { Title, Button, Modal, Loader, Text } from "@mantine/core";
 
 import Header from "../components/common/Header";
 
 import {
   motion,
+  useAnimation,
   // useAnimation
 } from "framer-motion";
 
 // icons
 import {
-  BiSearch as SearchIcon,
+  // BiSearch as SearchIcon,
   BiRefresh as RefreshIcon,
   // BiImageAlt as ImageIcon,
 } from "react-icons/bi";
 import { HiPlus as AddIcon } from "react-icons/hi";
 
 import RoomCard from "../components/RoomCard";
-import { container, item } from "../constants/variants";
+import { container } from "../constants/variants";
 import { useMediaQuery } from "@mantine/hooks";
 import Page from "../components/common/Page";
 import { useQuery } from "react-query";
@@ -26,7 +27,7 @@ import { RoomType } from "../interfaces";
 import CreateRoom from "../components/CreateRoom";
 
 const Home = () => {
-  // const controls = useAnimation();
+  const controls = useAnimation();
   const getRooms = async (): Promise<RoomType[]> => {
     const { data } = await api("/rooms/all");
     return data.rooms;
@@ -39,9 +40,9 @@ const Home = () => {
   const openModal = () => setOpened(true);
   const closeModal = () => setOpened(false);
 
-  // useEffect(() => {
-  //   console.log(roomsQuery);
-  // }, []);
+  useEffect(() => {
+    controls.start("visible");
+  }, [roomsQuery]);
   return (
     <Page>
       <motion.div layout>
@@ -54,7 +55,7 @@ const Home = () => {
             layout
             className="flex flex-wrap items-center gap-2 justify-between"
           >
-            <motion.div
+            {/* <motion.div
               layout
               className="border rounded-full focus-within:border-black w-full sm:w-1/2 px-4 py-2 transition-all flex items-center gap-2"
             >
@@ -64,7 +65,7 @@ const Home = () => {
                 placeholder="Search for the rooms"
                 className="text-xs outline-none w-full h-full"
               />
-            </motion.div>
+            </motion.div> */}
             <Title order={1} className="text-lg sm:text-xl sm:-order-1">
               All Rooms
             </Title>
@@ -87,8 +88,7 @@ const Home = () => {
               layout
               variants={container}
               initial="hidden"
-              animate="visible"
-              // animate={control}
+              animate={controls}
               className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 gap-2 my-4"
             >
               {roomsQuery.data.map((room) => (

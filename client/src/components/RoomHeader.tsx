@@ -21,7 +21,7 @@ const RoomHeader = ({ title }: PropType) => {
         {/* <Button>Back</Button> */}
         <ActionIcon
           className="bg-white text-black rounded-full"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/")}
           size="lg"
           title="Back"
         >

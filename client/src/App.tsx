@@ -35,8 +35,7 @@ const App = () => {
         />
         <Route
           path="/room/:roomID"
-          // element={user ? <Room /> : <Navigate to="/login" replace />}
-          element={<Room />}
+          element={user ? <Room /> : <Navigate to="/login" replace />}
         />
         <Route path="/user/:userID" element={<Profile />} />
       </Routes>

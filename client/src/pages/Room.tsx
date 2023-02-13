@@ -46,7 +46,7 @@ import { useEffect, useState } from "react";
 import { messages } from "../constants/messages";
 import { useWebRTC } from "../hooks/useWebRTC";
 import { useAuth } from "../context/AuthContext";
-import { User } from "../interfaces";
+import { ClientType, User } from "../interfaces";
 import { useQuery } from "react-query";
 import { api } from "../axios";
 
@@ -61,30 +61,44 @@ const Room = () => {
   >([]);
   const { user } = useAuth();
   const { roomID } = useParams();
+  const roomQuery = useQuery("room", async () => {
+    const { data } = await api({
+      url: `rooms/${roomID}`,
+      headers: {
+        Authorization: `Bearer ${user?.token}`,
+      },
+    });
 
-  // const roomQuery = useQuery("room", async () => {
-  //   const { data } = await api({
-  //     method: "get",
-  //     url: `/rooms/${roomID}`,
-  //     headers: {
-  //       Authorization: `Bearer ${user?.token} `,
-  //     },
-  //   });
-
-  //   return data.room;
-  // });
+    return data.room;
+  });
   const [micActive, setMicActive] = useState<boolean>(false);
   const [messagesActive, setMessagesActive] = useState<boolean>(false);
   const [showShare, setShowShare] = useState<boolean>(false);
 
-  const { clients, provideRef, handleMute } = useWebRTC(roomID, user);
+  const { clients, provideRef, handleMute } = useWebRTC(user, roomID);
 
-  const handleMuteClick = (clientId: string) => {
-    if (clientId !== user?.id) {
-      return;
+  useEffect(() => {
+    if (user?.id) handleMute(micActive, user?.id);
+  }, [micActive]);
+
+  const handleMicChange = async (value: string) => {
+    setSelectedMic(value);
+    try {
+      const selectedMicId = value;
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          deviceId: selectedMicId ? { exact: selectedMicId } : undefined,
+        },
+      });
+      console.log(stream);
+    } catch (error) {
+      console.error(error);
     }
-    setMicActive(!micActive);
   };
+
+  useEffect(() => {
+    console.log(clients);
+  }, [clients]);
 
   useEffect(() => {
     navigator.mediaDevices
@@ -103,7 +117,6 @@ const Room = () => {
           label: mic.label,
         }));
         setClientMics(data);
-        console.log(data);
       })
       .catch((error) => {
         console.error(error);
@@ -111,19 +124,20 @@ const Room = () => {
   }, []);
   return (
     <Page>
-      <RoomHeader title="Room title" />
-      {/* {!roomQuery?.isLoading && <RoomHeader title={roomQuery.data?.title} />} */}
+      {/* <RoomHeader title="Room title" /> */}
+      {!roomQuery?.isLoading && roomQuery.data && (
+        <RoomHeader title={roomQuery.data?.title} />
+      )}
       <motion.div
         layout
         className={` bg-black/90 ${messagesActive ? "flex" : ""}`}
       >
         <motion.div
           layout
-          className="overflow-y-scroll w-full bg-black hide-scroll bg-cover"
+          className="overflow-y-scroll w-full bg-black hide-scroll bg-cover bg-center"
           style={{
             height: "calc(100vh - 70px)",
-            backgroundImage:
-              "url(https://c4.wallpaperflare.com/wallpaper/500/442/354/outrun-vaporwave-hd-wallpaper-preview.jpg)",
+            backgroundImage: `url(${roomQuery.data?.thumbnail})`,
           }}
         >
           <motion.div
@@ -134,39 +148,25 @@ const Room = () => {
             }}
           >
             <motion.div layout className="max-w-7xl p-3 mx-auto">
-              <Title className="text-xl" order={2}>
+              {/* <Title className="text-xl" order={2}>
                 Listeners (20)
-              </Title>
+              </Title> */}
               <motion.div
                 variants={container}
                 initial="hidden"
                 animate="visible"
                 className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 gap-3 my-3"
               >
-                {users.map((user, index) => (
-                  <RoomUserCard
-                    provideRef={null}
-                    key={index}
-                    micActive={true}
-                    user={{
-                      token: "",
-                      avatar: user.picture.medium,
-                      name: `${user.name.first} ${user.name.last}`,
-                      // _id: user.login.uuid,
-                    }}
-                  />
-                ))}
-                {/* {clients.map((client: User) => (
-                  <RoomUserCard
-                    key={client.id}
-                    user={client}
-                    provideRef={provideRef}
-                    isSpeaker={false}
-                    handleMuteClick={() =>
-                      client?.id && handleMuteClick(client?.id)
-                    }
-                  />
-                ))} */}
+                <AnimatePresence initial={false}>
+                  {clients.map((client: ClientType) => (
+                    <RoomUserCard
+                      provideRef={provideRef}
+                      key={client.id}
+                      muted={client.muted}
+                      user={client}
+                    />
+                  ))}
+                </AnimatePresence>
               </motion.div>
             </motion.div>
           </motion.div>
@@ -272,12 +272,15 @@ const Room = () => {
                 ? "bg-red-600 hover:bg-red-800"
                 : "bg-zinc-900 hover:bg-zinc-700"
             }`}
-            onClick={() => setMicActive(!micActive)}
+            onClick={() => {
+              if (user?.id) handleMute(!micActive, user?.id);
+              setMicActive(!micActive);
+            }}
           >
             {micActive ? <MicOffIcon size={20} /> : <MicOnIcon size={20} />}
           </ActionIcon>
         </Tooltip>
-        <Tooltip
+        {/* <Tooltip
           withArrow
           offset={10}
           label="Toggle on/off the chatting window"
@@ -295,7 +298,7 @@ const Room = () => {
           >
             <ChatIcon />
           </ActionIcon>
-        </Tooltip>
+        </Tooltip> */}
         <Tooltip label="Share the room" withArrow offset={10}>
           <ActionIcon
             size="xl"
@@ -321,7 +324,7 @@ const Room = () => {
             }}
             value={selectedMic}
             data={clientMics}
-            onChange={(value: string) => setSelectedMic(value)}
+            onChange={handleMicChange}
           />
         )}
         <Button
@@ -341,7 +344,7 @@ const Room = () => {
               ),
             });
           }}
-          className="bg-red-500 hover:bg-red-900"
+          className="bg-red-500 hover:bg-red-900 ml-auto"
           leftIcon={<ExitIcon size={18} />}
         >
           Leave Room
