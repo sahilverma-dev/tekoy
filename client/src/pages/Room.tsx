@@ -35,7 +35,7 @@ import {
   MdContentCopy as CopyIcon,
   MdCheck as CheckIcon,
 } from "react-icons/md";
-
+import { BiRefresh as RefreshIcon } from "react-icons/bi";
 import {
   IoMdShare as ShareIcon,
   IoMdExit as ExitIcon,
@@ -47,14 +47,36 @@ import { messages } from "../constants/messages";
 import { useWebRTC } from "../hooks/useWebRTC";
 import { useAuth } from "../context/AuthContext";
 import { User } from "../interfaces";
+import { useQuery } from "react-query";
+import { api } from "../axios";
+
+interface RoomType {
+  title: string;
+}
 
 const Room = () => {
+  const [selectedMic, setSelectedMic] = useState<string | null>(null);
+  const [clientMics, setClientMics] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const { user } = useAuth();
   const { roomID } = useParams();
+
+  // const roomQuery = useQuery("room", async () => {
+  //   const { data } = await api({
+  //     method: "get",
+  //     url: `/rooms/${roomID}`,
+  //     headers: {
+  //       Authorization: `Bearer ${user?.token} `,
+  //     },
+  //   });
+
+  //   return data.room;
+  // });
   const [micActive, setMicActive] = useState<boolean>(false);
   const [messagesActive, setMessagesActive] = useState<boolean>(false);
   const [showShare, setShowShare] = useState<boolean>(false);
 
-  const { user } = useAuth();
   const { clients, provideRef, handleMute } = useWebRTC(roomID, user);
 
   const handleMuteClick = (clientId: string) => {
@@ -65,64 +87,54 @@ const Room = () => {
   };
 
   useEffect(() => {
-    console.log(clients);
-  }, [clients]);
-
-  useEffect(() => {
-    if (user?.id) handleMute(micActive, user.id);
-  }, [micActive]);
-
+    navigator.mediaDevices
+      .getUserMedia({ audio: true })
+      .then((stream) => {
+        const defaultMic = stream.getTracks()[0].getSettings().deviceId;
+        if (defaultMic) setSelectedMic(defaultMic);
+        return navigator.mediaDevices.enumerateDevices();
+      })
+      .then((devices) => {
+        const microphones = devices.filter(
+          (device) => device.kind === "audioinput"
+        );
+        const data = microphones.map((mic) => ({
+          value: mic.deviceId,
+          label: mic.label,
+        }));
+        setClientMics(data);
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
   return (
     <Page>
-      <RoomHeader title="Lorem ipsum dolor sit amet." />
-      {/* <div
-          className="flex items-center flex-col gap-2 justify-center w-full"
-          style={{
-            height: "calc(100vh - 160px)",
-          }}
-        >
-          <Loader color="indigo" />
-
-          <Text className="text-sm text-slate-800">
-            Loading Participants&apos; data...
-          </Text>
-        </div> */}
-      <motion.div layout className={`${messagesActive ? "flex" : ""}`}>
+      <RoomHeader
+        thumbnail="https://c4.wallpaperflare.com/wallpaper/500/442/354/outrun-vaporwave-hd-wallpaper-preview.jpg"
+        title="Room title"
+      />
+      {/* {!roomQuery?.isLoading && <RoomHeader title={roomQuery.data?.title} />} */}
+      <motion.div
+        layout
+        className={` bg-black/90 ${messagesActive ? "flex" : ""}`}
+      >
         <motion.div
           layout
-          className="overflow-y-scroll hide-scroll"
+          className="overflow-y-scroll w-full bg-black hide-scroll bg-cover"
           style={{
             height: "calc(100vh - 70px)",
+            backgroundImage:
+              "url(https://c4.wallpaperflare.com/wallpaper/500/442/354/outrun-vaporwave-hd-wallpaper-preview.jpg)",
           }}
         >
-          <div className="max-w-7xl p-3 mx-auto hide-scroll">
-            <Title className="text-xl" order={2}>
-              Speakers (4)
-            </Title>
-            <motion.div
-              variants={container}
-              initial="hidden"
-              animate="visible"
-              className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-3 my-3"
-            >
-              {/* {users.slice(0, 6).map((user, index) => (
-                <RoomUserCard
-                  provideRef={provideRef}
-                  key={index}
-                  isSpeaker={true}
-                  user={{
-                    token: "",
-                    avatar: user.picture.medium,
-                    name: `${user.name.first} ${user.name.last}`,
-                    // _id: user.login.uuid,
-                  }}
-                />
-              ))} */}
-            </motion.div>
-          </div>
           <motion.div
             layout
-            className="w-full h-screen bg-gray-200 p-3 rounded-t-lg"
+            className="w-full h-screen bg-black/50 text-white backdrop-blur-md p-3 rounded-t-lg"
+            style={{
+              height: "calc(100vh - 70px)",
+            }}
           >
             <motion.div layout className="max-w-7xl p-3 mx-auto">
               <Title className="text-xl" order={2}>
@@ -132,13 +144,13 @@ const Room = () => {
                 variants={container}
                 initial="hidden"
                 animate="visible"
-                className="grid grid-cols-5 sm:grid-cols-7 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-3 my-3"
+                className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 gap-3 my-3"
               >
-                {/* {users.map((user, index) => (
+                {users.map((user, index) => (
                   <RoomUserCard
-                    provideRef={provideRef}
+                    provideRef={null}
                     key={index}
-                    isSpeaker={false}
+                    micActive={true}
                     user={{
                       token: "",
                       avatar: user.picture.medium,
@@ -146,8 +158,8 @@ const Room = () => {
                       // _id: user.login.uuid,
                     }}
                   />
-                ))} */}
-                {clients.map((client: User) => (
+                ))}
+                {/* {clients.map((client: User) => (
                   <RoomUserCard
                     key={client.id}
                     user={client}
@@ -157,7 +169,7 @@ const Room = () => {
                       client?.id && handleMuteClick(client?.id)
                     }
                   />
-                ))}
+                ))} */}
               </motion.div>
             </motion.div>
           </motion.div>
@@ -170,7 +182,7 @@ const Room = () => {
               initial="exit"
               animate="enter"
               exit="exit"
-              className="min-w-[500px] fixed md:static inset-0 bg-white border-2 z-50 overflow-y-scroll"
+              className="min-w-[500px] fixed md:static inset-0 bg-zinc-900 border-zinc-800 border-2 z-50 overflow-y-scroll"
               style={{
                 height: "calc(100vh - 70px)",
               }}
@@ -189,7 +201,7 @@ const Room = () => {
               <div
                 className="overflow-y-scroll my-2"
                 style={{
-                  height: "calc(100vh - 210px)",
+                  height: "calc(100vh - 211px)",
                 }}
               >
                 <motion.ul
@@ -225,21 +237,25 @@ const Room = () => {
                   </AnimatePresence>
                 </motion.ul>
               </div>
-              <div className="border-t flex gap-2 p-3">
+              <div className="border-t border-zinc-800 flex gap-2 p-3">
                 <TextInput
                   type="text"
                   withAsterisk
                   size="md"
                   radius="md"
+                  variant="default"
                   placeholder="Enter your messages"
-                  className="w-full"
+                  className="w-full "
+                  classNames={{
+                    input: "bg-zinc-800 border-zinc-900 text-white",
+                  }}
                   // {...form.getInputProps('email')}
                 />
                 <ActionIcon
                   variant="default"
                   size="xl"
                   radius="md"
-                  className="bg-blue-600 hover:bg-blue-900 text-white aspect-square h-full"
+                  className="bg-blue-600 hover:bg-blue-900 text-white border-zinc-800 aspect-square h-full"
                 >
                   <SendIcon size={18} />
                 </ActionIcon>
@@ -248,7 +264,7 @@ const Room = () => {
           </AnimatePresence>
         )}
       </motion.div>
-      <div className="bg-black/60 backdrop-blur py-3 px-3 md:px-6 rounded-t-md md:rounded-md fixed bottom-0 md:bottom-2 left-1/2 -translate-x-1/2 z-30 w-full md:w-[600px] flex items-center gap-3">
+      <div className="bg-white/20 backdrop-blur py-3 px-3 md:px-6 rounded-t-md md:rounded-md fixed bottom-0 md:bottom-2 left-1/2 -translate-x-1/2 z-30 w-full md:w-[600px] flex items-center gap-3">
         <Tooltip withArrow offset={10} label="Toggle on/off the mic">
           <ActionIcon
             size="xl"
@@ -294,36 +310,23 @@ const Room = () => {
             <ShareIcon size={20} />
           </ActionIcon>
         </Tooltip>
-        <Select
-          radius="md"
-          variant="default"
-          placeholder="Select Mic"
-          size="md"
-          classNames={{
-            input: "bg-zinc-900 text-white border-0",
-            dropdown: "bg-zinc-800 rounded-md text-white border-0",
-            item: "text-white hover:text-black",
-            // wrapper: "bg-red-500",
-          }}
-          data={[
-            {
-              value: "mic-1",
-              label: "Mic 1",
-            },
-            {
-              value: "mic-2",
-              label: "Mic 2",
-            },
-            {
-              value: "mic-3",
-              label: "Mic 3",
-            },
-            {
-              value: "mic-4",
-              label: "Mic 4",
-            },
-          ]}
-        />
+        {clientMics.length > 0 && (
+          <Select
+            radius="md"
+            variant="default"
+            placeholder="Select Mic"
+            size="md"
+            classNames={{
+              input: "bg-zinc-900 text-white border-0",
+              dropdown: "bg-zinc-800 rounded text-white border-0",
+              item: "text-white hover:text-black text-sm",
+              // wrapper: "bg-red-500",
+            }}
+            value={selectedMic}
+            data={clientMics}
+            onChange={(value: string) => setSelectedMic(value)}
+          />
+        )}
         <Button
           size="md"
           radius="md"
@@ -347,6 +350,46 @@ const Room = () => {
           Leave Room
         </Button>
       </div>
+      {/* {roomQuery?.isLoading && (
+        <div className="flex items-center flex-col gap-2 justify-center w-full h-screen">
+          <Loader color="indigo" />
+
+          <Text className="text-sm text-slate-800">
+            Loading Room&apos; data...
+          </Text>
+        </div>
+      )}
+      {!roomQuery?.isLoading && !roomQuery?.isError && (
+        <>
+      
+        </>
+      )}
+      {roomQuery?.isLoadingError && (
+        <div
+          className="flex items-center flex-col gap-2 justify-center w-full"
+          style={{
+            height: "calc(100vh - 160px)",
+          }}
+        >
+          <img
+            src="https://uxwing.com/wp-content/themes/uxwing/download/signs-and-symbols/warning-icon.png"
+            alt=""
+            className="h-20"
+          />
+          <Text className="text-lg font-bold text-slate-800">
+            Failed to load Room{" "}
+          </Text>
+          <Button
+            variant="default"
+            radius="md"
+            leftIcon={<RefreshIcon className="text-lg" />}
+            className="bg-primary hover:bg-purple-900 text-white"
+            onClick={() => roomQuery.refetch()}
+          >
+            Re-load
+          </Button>
+        </div>
+      )} */}
       {/* <div className="!fixed bottom-0 overlay pointer-events-none"></div> */}
       <Modal
         opened={showShare}
