@@ -38,6 +38,6 @@ export interface RoomType {
   createdAt: Date;
 }
 
-export interface ClientsType extends User {
+export interface ClientType extends User {
   muted: boolean;
 }
