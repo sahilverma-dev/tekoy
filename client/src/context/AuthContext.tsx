@@ -51,21 +51,29 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
           email: data?.email,
           name: data?.name,
         };
-        const { data: data1 } = await api({
-          url: "user/google",
-          method: "post",
-          data: userData,
-        });
-        console.log(data1);
-        if (data1) {
-          setUser({ ...data1.user, token: data1.token });
-          localStorage.setItem("token", data1?.token);
-          showNotification({
-            title: "Login Successful",
-            message: `Logged in as ${data1?.user?.name}`,
+        try {
+          const { data: data1 } = await api({
+            url: "user/google",
+            method: "post",
+            data: userData,
           });
+          console.log(data1);
+          if (data1) {
+            setUser({ ...data1.user, token: data1.token });
+            localStorage.setItem("token", data1?.token);
+            showNotification({
+              title: "Login Successful",
+              message: `Logged in as ${data1?.user?.name}`,
+            });
+          }
+        } catch (error: any) {
+          showNotification({
+            title: "Failed to Login",
+            color: "red",
+            message: error?.response?.data?.error,
+          });
+          setIsLoading(false);
         }
-        setIsLoading(false);
       } catch (error) {
         setIsLoading(false);
         console.log(error);
