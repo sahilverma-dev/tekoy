@@ -99,7 +99,7 @@ const RoomUserCard = ({ user, provideRef, micActive }: Props) => {
       </Tooltip>
       <audio
         src=""
-        // ref={(instance) => provideRef(instance, user.id)}
+        ref={(instance) => provideRef(instance, user?.id)}
         autoPlay
       />
     </motion.div>
