@@ -9,6 +9,9 @@ import { connectDB } from "./config/db";
 // importing routes
 import { userRoute } from "./routes/userRoute";
 import { roomRoute } from "./routes/roomRoute";
+import { bugRoute } from "./routes/bugRoute";
+
+// socket actions
 import { ACTIONS } from "./constants/socket-actions";
 
 // configure dotenv
@@ -37,6 +40,7 @@ app.get("/", (req, res) => {
 });
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/rooms", roomRoute);
+app.use("/api/v1/bug", bugRoute);
 console.clear();
 
 // sockets
