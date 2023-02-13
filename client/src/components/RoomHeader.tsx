@@ -27,19 +27,9 @@ const RoomHeader = ({ title }: PropType) => {
         >
           <BackIcon />
         </ActionIcon>
-        {/* <button 
-        
-        // onClick={} 
-        
-        className="flex items-center gap-3">
-          <img
-            src="/logo-white.png"
-            alt="Tekoy"
-            className="md:h-9 h-7 aspect-square"
-          />
-          <span className="md:text-xl text-lg font-extrabold">Tekoy</span>
-        </button> */}
-        <Title className="text-xl">{title}</Title>
+        <Title className="text-xl">
+          {title || "Error! Failed to load room"}
+        </Title>
         <div className="flex">
           {user ? (
             <Menu shadow="md" width={200}>
@@ -58,7 +48,6 @@ const RoomHeader = ({ title }: PropType) => {
 
               <Menu.Dropdown>
                 <Menu.Label>Hello {user.name}</Menu.Label>
-                {/* <Menu.Item disabled>Hello</Menu.Item> */}
                 <Menu.Item icon={<ProfileIcon />}>
                   <Link to="/profile">Profile</Link>
                 </Menu.Item>
