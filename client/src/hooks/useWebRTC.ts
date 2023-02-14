@@ -3,9 +3,7 @@ import { ClientType, User } from "../interfaces";
 import { useStateWithCallback } from "./useStateWithCallback";
 import { Socket, io } from "socket.io-client";
 import { ACTIONS } from "../actions";
-import { socketInit } from "../sockets";
 import { freeice } from "../constants/freeice";
-import { showNotification } from "@mantine/notifications";
 
 export const useWebRTC = (user: User | null, roomID: string | undefined) => {
   const [clients, setClients] = useStateWithCallback<ClientType[]>([]);
@@ -27,7 +25,7 @@ export const useWebRTC = (user: User | null, roomID: string | undefined) => {
   );
 
   useEffect(() => {
-    const socket = io("http://localhost:5000");
+    const socket = io(import.meta.env.VITE_API_URL);
     socketRef.current = socket;
   }, []);
 
@@ -87,13 +85,6 @@ export const useWebRTC = (user: User | null, roomID: string | undefined) => {
           iceServers: freeice.map((server) => {
             return { urls: `stun:${server}` };
           }),
-        });
-        showNotification({
-          message: `${user?.name} joined the room`,
-          color: "blue",
-          classNames: {
-            body: "w-auto",
-          },
         });
 
         // Handle new ice candidate on this peer connection

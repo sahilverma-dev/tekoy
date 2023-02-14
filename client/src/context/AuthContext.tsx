@@ -11,6 +11,7 @@ import { IUser, User } from "../interfaces";
 import { api } from "../axios";
 import { showNotification } from "@mantine/notifications";
 import decode from "jwt-decode";
+import LoaderScreen from "../components/LoaderScreen";
 
 interface AuthContextProps {
   user: User | null;
@@ -31,6 +32,7 @@ const AuthContext = createContext<AuthContextProps | null>(null);
 export const AuthProvider = ({ children }: PropsWithChildren) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [loader, setLoader] = useState<boolean>(true);
 
   const loginWithGoogle = useGoogleLogin({
     onSuccess: async (res: any) => {
@@ -193,13 +195,16 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    setLoader(true);
     if (token) {
       const decoded: IUser = decode(token);
       setUser({
         ...decoded,
         token,
       });
+      setLoader(false);
     } else {
+      setLoader(false);
       logout();
     }
   }, []);
@@ -215,7 +220,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         logout,
       }}
     >
-      {children}
+      {loader ? <LoaderScreen /> : children}
     </AuthContext.Provider>
   );
 };

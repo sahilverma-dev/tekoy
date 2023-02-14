@@ -52,10 +52,6 @@ io.on("connection", (socket) => {
   console.log("New connection", socket.id);
   socket.on(ACTIONS.JOIN, ({ roomId, user }) => {
     socketUserMap[socket.id] = user;
-    console.log({
-      user,
-      roomId,
-    });
 
     const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
     clients.forEach((clientId) => {

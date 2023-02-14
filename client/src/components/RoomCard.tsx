@@ -13,7 +13,12 @@ interface PropsType {
 
 const RoomCard = ({ room }: PropsType) => {
   return (
-    <motion.div variants={item} layout className="mb-3">
+    <motion.div
+      variants={item}
+      layout
+      className="mb-3"
+      onClick={() => console.log(room)}
+    >
       <div className="relative rounded-lg">
         <Link to={`/room/${room._id}`}>
           <div className="overlay rounded-lg overflow-hidden" />

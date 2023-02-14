@@ -10,14 +10,13 @@ import {
   Modal,
   CopyButton,
 } from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
 
 import QRCode from "react-qr-code";
 
 // framer motion
 import { AnimatePresence, motion } from "framer-motion";
 
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Page from "../components/common/Page";
 import RoomHeader from "../components/RoomHeader";
 import { users } from "../constants/users";
@@ -50,11 +49,8 @@ import { ClientType, User } from "../interfaces";
 import { useQuery } from "react-query";
 import { api } from "../axios";
 
-interface RoomType {
-  title: string;
-}
-
 const Room = () => {
+  const navigate = useNavigate();
   const [selectedMic, setSelectedMic] = useState<string | null>(null);
   const [clientMics, setClientMics] = useState<
     { label: string; value: string }[]
@@ -71,14 +67,14 @@ const Room = () => {
 
     return data.room;
   });
-  const [micActive, setMicActive] = useState<boolean>(false);
+  const [micActive, setMicActive] = useState<boolean>(true);
   const [messagesActive, setMessagesActive] = useState<boolean>(false);
   const [showShare, setShowShare] = useState<boolean>(false);
 
   const { clients, provideRef, handleMute } = useWebRTC(user, roomID);
 
   useEffect(() => {
-    if (user?.id) handleMute(micActive, user?.id);
+    if (user?.id) handleMute(!micActive, user?.id);
   }, [micActive]);
 
   const handleMicChange = async (value: string) => {
@@ -269,15 +265,15 @@ const Room = () => {
             radius="xl"
             className={`border-0 text-zinc-200 ${
               micActive
-                ? "bg-red-600 hover:bg-red-800"
-                : "bg-zinc-900 hover:bg-zinc-700"
+                ? "bg-zinc-900 hover:bg-zinc-700"
+                : "bg-red-600 hover:bg-red-800"
             }`}
             onClick={() => {
-              if (user?.id) handleMute(!micActive, user?.id);
+              if (user?.id) handleMute(micActive, user?.id);
               setMicActive(!micActive);
             }}
           >
-            {micActive ? <MicOffIcon size={20} /> : <MicOnIcon size={20} />}
+            {micActive ? <MicOnIcon size={20} /> : <MicOffIcon size={20} />}
           </ActionIcon>
         </Tooltip>
         {/* <Tooltip
@@ -330,27 +326,14 @@ const Room = () => {
         <Button
           size="md"
           radius="md"
-          onClick={() => {
-            showNotification({
-              message: `${user?.name} joined the room`,
-              classNames: {
-                body: "w-auto",
-              },
-              icon: (
-                <img
-                  src={user?.avatar}
-                  className="rounded-full h-7 block aspect-square shrink-0"
-                />
-              ),
-            });
-          }}
+          onClick={() => navigate("/")}
           className="bg-red-500 hover:bg-red-900 ml-auto"
           leftIcon={<ExitIcon size={18} />}
         >
           Leave Room
         </Button>
       </div>
-      {/* {roomQuery?.isLoading && (
+      {roomQuery?.isLoading && (
         <div className="flex items-center flex-col gap-2 justify-center w-full h-screen">
           <Loader color="indigo" />
 
@@ -359,11 +342,7 @@ const Room = () => {
           </Text>
         </div>
       )}
-      {!roomQuery?.isLoading && !roomQuery?.isError && (
-        <>
-      
-        </>
-      )}
+      {!roomQuery?.isLoading && !roomQuery?.isError && <></>}
       {roomQuery?.isLoadingError && (
         <div
           className="flex items-center flex-col gap-2 justify-center w-full"
@@ -389,8 +368,8 @@ const Room = () => {
             Re-load
           </Button>
         </div>
-      )} */}
-      {/* <div className="!fixed bottom-0 overlay pointer-events-none"></div> */}
+      )}
+      <div className="!fixed bottom-0 overlay pointer-events-none"></div>
       <Modal
         opened={showShare}
         title="Share the room"

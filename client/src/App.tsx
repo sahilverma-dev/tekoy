@@ -44,7 +44,7 @@ const App = () => {
           variant="default"
           size="xl"
           radius="md"
-          className="fixed bottom-3 bg-primary hover:bg-purple-800 text-white right-3 aspect-square"
+          className="fixed bottom-3 bg-primary hover:bg-purple-800 text-white right-3 aspect-square z-50"
           onClick={() => setModalOpen(true)}
         >
           <BugIcon size={20} />
