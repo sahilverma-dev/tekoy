@@ -21,7 +21,7 @@ export const images = [
   },
 
   {
-    src: "https://source.unsplash.com/Dm-qxdynoEc/800x799",
+    src: "https://img.freepik.com/free-photo/india-flag-wrinkled-dark-background-3d-render_1379-583.jpg?w=2000",
     width: 1,
     height: 1,
   },
