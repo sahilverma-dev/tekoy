@@ -7,7 +7,6 @@ import "./index.css";
 import { AuthProvider } from "./context/AuthContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { ReactQueryDevtools } from "react-query/devtools";
 import { NotificationsProvider } from "@mantine/notifications";
 
 const queryClient = new QueryClient();
@@ -25,7 +24,6 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
                 <App />
               </NotificationsProvider>
             </AuthProvider>
-            <ReactQueryDevtools initialIsOpen />
           </QueryClientProvider>
         </MantineProvider>
       </BrowserRouter>
